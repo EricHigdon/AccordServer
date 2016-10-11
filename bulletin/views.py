@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail, EmailMultiAlternatives
 import random
 from .models import *
 from .forms import *
@@ -109,20 +109,24 @@ def contact(request):
     if request.method == 'POST':
         post_data = dict(request.POST)
         file_data = request.FILES.items()
-        recipient = post_data.pop('recipient')[0].split(",")
+        recipients = post_data.pop('recipient')[0].split(",")
         subject = post_data.pop('form')[0]
         email_context = {
             'post_data': post_data
         }
         msg_plain = render_to_string('bulletin/contact-email.txt', email_context)
-        email = EmailMessage(
+        msg_html = render_to_string('bulletin/contact-email.html', email_context)
+        email = EmailMultiAlternatives(
             subject,
             msg_plain,
-            request.POST.get('email', 'Fairfieldwestbaptist@gmail.com'),
-            recipient
+            'Fairfieldwestbaptist@gmail.com',
+            recipients,
+            ['eric.s.higdon@gmail.com'],
+            reply_to=[request.POST.get('email', None)]
         )
         for key, upload in file_data:
             email.attach(upload.name, upload.read(), upload.content_type)
+        email.attach_alternative(msg_html, "text/html")
         email.send()
     response = JsonResponse({'success':True})
     response['Access-Control-Allow-Origin'] = '*'
