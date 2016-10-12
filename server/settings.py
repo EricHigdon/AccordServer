@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'bulletin',
+    'push_notifications',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +74,21 @@ TEMPLATES = [
         },
     },
 ]
+
+PUSH_NOTIFICATIONS_SETTINGS = {
+        #"GCM_API_KEY": "[your api key]",
+        'APNS_CERTIFICATE': 'dev.pem',
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_PERMISSION_SETTINGS': (
+        'rest_framework.permissions.AllowAny',
+    )
+}
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
