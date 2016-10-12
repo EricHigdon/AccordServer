@@ -6,5 +6,5 @@ ALLOWED_HOSTS = [
 
 PUSH_NOTIFICATIONS_SETTINGS = {
     'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-    'APNS_CERTIFICATE': 'dist.pem',
+    'APNS_CERTIFICATE': '/certs/accord/dev.pem',
 }
