@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'mhuiueib5q(3wh=r*1c0-a1j+__kwc0a9opl(nw5v&i7*p8lqz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '.erichigdon.com',
@@ -77,7 +77,7 @@ TEMPLATES = [
 
 PUSH_NOTIFICATIONS_SETTINGS = {
         #"GCM_API_KEY": "[your api key]",
-        'APNS_CERTIFICATE': 'dev.pem',
+        'APNS_CERTIFICATE': 'dist.pem',
 }
 
 REST_FRAMEWORK = {
