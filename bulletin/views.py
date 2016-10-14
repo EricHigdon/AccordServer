@@ -111,6 +111,7 @@ def contact(request):
         file_data = request.FILES.items()
         recipients = post_data.pop('recipient')[0].split(",")
         subject = post_data.pop('form')[0]
+        token = post_data.pop('csrfmiddlewaretoken')
         email_context = {
             'post_data': post_data
         }
