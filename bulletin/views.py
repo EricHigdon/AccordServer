@@ -9,6 +9,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 import random
 from .models import *
 from .forms import *
+from .decorators import http_basic_auth
 
 # Create your views here.
 def main(request, slug):
@@ -104,7 +105,6 @@ def api(request, slug):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
-@csrf_exempt
 def contact(request):
     if request.method == 'POST':
         post_data = dict(request.POST)
@@ -133,6 +133,7 @@ def contact(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@http_basic_auth
 def form(request, form_id):
     template = 'bulletin/form.html'
     form = get_object_or_404(Form, pk=form_id)
