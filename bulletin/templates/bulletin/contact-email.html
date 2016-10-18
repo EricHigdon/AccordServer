@@ -3,5 +3,6 @@
     {% for key, data in post_data.items %}
         <p><strong>{{ key }}</strong> {% for item in data %}{{ item }}{% endfor %}</p>
     {% endfor %}
+	<p style="display:none;"><strong>User Agent</strong> {{ user_agent }}</p>
 </body>
 </html>

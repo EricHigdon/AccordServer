@@ -112,8 +112,13 @@ def contact(request):
         recipients = post_data.pop('recipient')[0].split(",")
         subject = post_data.pop('form')[0]
         token = post_data.pop('csrfmiddlewaretoken')
+        user_agent = request.META.get('HTTP_USER_AGENT', None)
+        reply_email = request.POST.get('email', None)
+        if reply_email is None:
+            reply_email = request.POST.get('Email', None)
         email_context = {
-            'post_data': post_data
+            'post_data': post_data,
+            'user_agent': user_agent
         }
         msg_plain = render_to_string('bulletin/contact-email.txt', email_context)
         msg_html = render_to_string('bulletin/contact-email.html', email_context)
@@ -123,7 +128,7 @@ def contact(request):
             'Fairfieldwestbaptist@gmail.com',
             recipients,
             ['eric.s.higdon@gmail.com'],
-            reply_to=[request.POST.get('email', None)]
+            reply_to=[reply_email]
         )
         for key, upload in file_data:
             email.attach(upload.name, upload.read(), upload.content_type)
