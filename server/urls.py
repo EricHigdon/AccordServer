@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include(router.urls)),
     url(r'^', include('bulletin.urls')),
+    url(r'^display/', include('display.urls')),
 ]

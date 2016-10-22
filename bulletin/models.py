@@ -2,6 +2,7 @@ from django.db import models
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 upload_storage = FileSystemStorage(location=settings.UPLOAD_URL)
 FIELD_TYPES = (
@@ -84,17 +85,17 @@ BOOK_CHOICES = (
 )
 # Create your models here.
 
-class Bulletin(models.Model):
+class Church(models.Model):
     admin = models.ForeignKey(User)
     slug = models.SlugField(max_length=200)
-    date = models.DateField(max_length=200)
+    modified_date = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return self.slug
     
 class Page(models.Model):
     title = models.CharField(max_length=200)
-    bulletin = models.ForeignKey(Bulletin, related_name='pages')
+    church = models.ForeignKey(Church, related_name='pages')
     template = models.TextField(max_length=5000)
     
     def __str__(self):
@@ -111,7 +112,7 @@ class Item(models.Model):
         return self.title
     
 class Form(models.Model):
-    bulletin = models.ForeignKey(Bulletin, related_name='forms')
+    church = models.ForeignKey(Church, related_name='forms')
     name = models.CharField(max_length=200)
     recipient = models.CharField(max_length=500, help_text='a comma separated list of emails')
     
@@ -136,7 +137,7 @@ class Choice(models.Model):
         return self.name
 
 class Passage(models.Model):
-    bulletin = models.ForeignKey(Bulletin, related_name='passages')
+    church = models.ForeignKey(Church, related_name='passages')
     book = models.CharField(max_length=200, choices=BOOK_CHOICES)
     chapter = models.IntegerField(blank=True, null=True)
     verse = models.CharField(max_length=200, blank=True)

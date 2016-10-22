@@ -16,12 +16,12 @@ def main(request, slug):
     template = 'bulletin/base.html'
     extra_classes = ''
     pages = []
-    bulletin = get_object_or_404(Bulletin, slug=slug)
-    if request.user == bulletin.admin:
+    church = get_object_or_404(Church, slug=slug)
+    if request.user == church.admin:
         is_admin = True
     else:
         is_admin = False
-    page_objects = bulletin.pages.all()
+    page_objects = church.pages.all()
     for page in page_objects:
         if page != page_objects[0]:
             extra_classes = 'cached'
@@ -44,7 +44,7 @@ def main(request, slug):
 
 def update(request, slug, action, item_id):
     try:
-        bulletin = Bulletin.objects.get(slug=slug, admin=request.user)
+        church = Church.objects.get(slug=slug, admin=request.user)
         if action == 'update':
             item = Item.objects.get(pk=item_id)
         else:
@@ -67,7 +67,7 @@ def update(request, slug, action, item_id):
         template = 'bulletin/form.html'
         if action == 'add':
             item = Page.objects.get(pk=item_id)
-        context = {'form':form, 'bulletin':bulletin, 'item':item, 'action':action}
+        context = {'form':form, 'church':church, 'item':item, 'action':action}
         return render(request, template, context)
 
 def manifest(request):
@@ -79,13 +79,13 @@ def api(request, slug):
     extra_classes = ''
     pages = []
     forms = []
-    bulletin = get_object_or_404(Bulletin, slug=slug)
-    if request.user == bulletin.admin:
+    church = get_object_or_404(Church, slug=slug)
+    if request.user == church.admin:
         is_admin = True
     else:
         is_admin = False
-    page_objects = bulletin.pages.all()
-    forms = bulletin.forms.all()
+    page_objects = church.pages.all()
+    forms = church.forms.all()
     for page in page_objects:
         if page != page_objects[0]:
             extra_classes = 'cached'
@@ -98,7 +98,7 @@ def api(request, slug):
             'extra_classes': extra_classes,
             'is_admin': is_admin,
             'forms': forms,
-            'bulletin': bulletin
+            'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})
     response = JsonResponse({'pages': pages}, safe=False)

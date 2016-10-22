@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'bulletin',
+    'display',
     'push_notifications',
 ]
 
@@ -141,7 +142,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Detroit'
 
 USE_I18N = True
 
@@ -153,8 +154,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+UPLOAD_PATH = 'img/uploads'
+UPLOAD_URL = '/home3/ehigdon/public_html/static/accord/' + UPLOAD_PATH
 STATIC_URL = 'https://cdn.erichigdon.com/accord/'
-UPLOAD_URL = '/home3/ehigdon/public_html/static/accord/img/uploads'
 
 try:
     from server.local_settings import *
