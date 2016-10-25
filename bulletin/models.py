@@ -87,7 +87,8 @@ BOOK_CHOICES = (
 # Create your models here.
 
 class Church(models.Model):
-    admin = models.ForeignKey(User)
+    #admin = models.ForeignKey(User)
+    admins = models.ManyToManyField(User, related_name='church')
     slug = models.SlugField(max_length=200)
     modified_date = models.DateTimeField(default=timezone.now)
     im_new = models.TextField(max_length=10000)
@@ -114,7 +115,7 @@ class Item(models.Model):
         return self.title
     
     class Meta:
-        ordering = ['sort_order']
+        ordering = ['sort_order', '-pk']
     
 class Form(models.Model):
     church = models.ForeignKey(Church, related_name='forms')
@@ -129,7 +130,7 @@ class Form(models.Model):
         return bulletin.forms.ContactForm(instance=self)
     
     class Meta:
-        ordering = ['sort_order']
+        ordering = ['sort_order', '-pk']
 
 class FormSubmission(models.Model):
     form = models.ForeignKey(Form, related_name='submissions')
@@ -149,7 +150,7 @@ class Field(models.Model):
         return self.name
     
     class Meta:
-        ordering = ['sort_order']
+        ordering = ['sort_order', '-pk']
 
 class Choice(models.Model):
     field = models.ForeignKey(Field, related_name='choices')
@@ -169,4 +170,4 @@ class Passage(models.Model):
         return self.book.title() + ' ' + str(self.chapter) + ':' + self.verse
     
     class Meta:
-        ordering = ['sort_order']
+        ordering = ['sort_order', '-pk']

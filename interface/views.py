@@ -21,7 +21,7 @@ def index(request):
 def dashboard(request):
     template = 'interface/dashboard.html'
     try:
-        church = Church.objects.get(admin=request.user)
+        church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
     form_submissions = FormSubmission.objects.filter(form__church=church)
@@ -36,7 +36,7 @@ def dashboard(request):
 def news(request):
     template = 'interface/news.html'
     try:
-        church = Church.objects.get(admin=request.user)
+        church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
@@ -64,7 +64,8 @@ def news(request):
 @login_required
 def delete_item(request, item_pk):
     item = Item.objects.get(pk=item_pk)
-    item.delete()
+    if request.user in item.church.admins.all():
+        item.delete()
     return redirect('news')
 
 @csrf_exempt
@@ -75,8 +76,9 @@ def reorder_item(request):
         for item in data:
             try:
                 news_item = Item.objects.get(pk=item)
-                news_item.sort_order = data[item]
-                news_item.save()
+                if request.user in news_item.church.admins.all():
+                    news_item.sort_order = data[item]
+                    news_item.save()
             except Item.DoesNotExist:
                 pass
     return JsonResponse({'success': True})
@@ -85,7 +87,7 @@ def reorder_item(request):
 def im_new(request):
     template = 'interface/im-new.html'
     try:
-        church = Church.objects.get(admin=request.user)
+        church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
     if request.method == 'POST':
@@ -115,7 +117,7 @@ def connect(request):
         }
     )
     try:
-        church = Church.objects.get(admin=request.user)
+        church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
@@ -149,7 +151,8 @@ def connect(request):
 @login_required
 def delete_form(request, form_pk):
     form = Form.objects.get(pk=form_pk)
-    form.delete()
+    if request.user in form.church.admins.all():
+        form.delete()
     return redirect('connect')
 
 @csrf_exempt
@@ -160,8 +163,9 @@ def reorder_form(request):
         for item in data:
             try:
                 form = Form.objects.get(pk=item)
-                form.sort_order = data[item]
-                form.save()
+                if request.user in form.church.admins.all():
+                    form.sort_order = data[item]
+                    form.save()
             except Form.DoesNotExist:
                 pass
     return JsonResponse({'success': True})
@@ -170,7 +174,7 @@ def reorder_form(request):
 def service(request):
     template = 'interface/service.html'
     try:
-        church = Church.objects.get(admin=request.user)
+        church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
@@ -197,8 +201,9 @@ def service(request):
 
 @login_required
 def delete_passage(request, item_pk):
-    item = Passage.objects.get(pk=item_pk)
-    item.delete()
+    passage = Passage.objects.get(pk=item_pk)
+    if request.user in item.church.admins.all():
+        passage.delete()
     return redirect('service')
 
 @csrf_exempt
@@ -209,8 +214,9 @@ def reorder_passage(request):
         for item in data:
             try:
                 passage = Passage.objects.get(pk=item)
-                passage.sort_order = data[item]
-                passage.save()
+                if request.user in passage.church.admins.all():
+                    passage.sort_order = data[item]
+                    passage.save()
             except Passage.DoesNotExist:
                 pass
     return JsonResponse({'success': True})

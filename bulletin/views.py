@@ -15,7 +15,7 @@ def api(request, slug):
     pages = []
     forms = []
     church = get_object_or_404(Church, slug=slug)
-    if request.user == church.admin:
+    if request.user in church.admins.all():
         is_admin = True
     else:
         is_admin = False
