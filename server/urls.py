@@ -23,8 +23,9 @@ router.register(r'device/apns', APNSDeviceAuthorizedViewSet)
 router.register(r'device/gcm', GCMDeviceAuthorizedViewSet)
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^', include('interface.urls')),
     url(r'^', include(router.urls)),
     url(r'^', include('bulletin.urls')),
     url(r'^display/', include('display.urls')),
+    url(r'^admin/', admin.site.urls),
 ]

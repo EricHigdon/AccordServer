@@ -14,7 +14,7 @@ class ContactForm(forms.Form):
 
     def __init__(self, instance=None, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields['form'] = forms.CharField(initial=instance.name, widget=forms.HiddenInput())
+        self.fields['form'] = forms.CharField(initial=instance.pk, widget=forms.HiddenInput())
         self.fields['recipient'] = forms.CharField(initial=instance.recipient, widget=forms.HiddenInput())
         for field in instance.fields.all().order_by('sort_order'):
             if field.field_type == 'char':

@@ -3,6 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
+import bulletin
 
 upload_storage = FileSystemStorage(location=settings.UPLOAD_URL)
 FIELD_TYPES = (
@@ -12,7 +13,7 @@ FIELD_TYPES = (
     ('text', 'Long Text'),
     ('int', 'Number'),
     ('bool', 'Checkbox'),
-    ('choice', 'Choice'),
+    #('choice', 'Choice'),
     ('file', 'File')
 )
 BOOK_CHOICES = (
@@ -89,6 +90,7 @@ class Church(models.Model):
     admin = models.ForeignKey(User)
     slug = models.SlugField(max_length=200)
     modified_date = models.DateTimeField(default=timezone.now)
+    im_new = models.TextField(max_length=10000)
     
     def __str__(self):
         return self.slug
@@ -102,7 +104,7 @@ class Page(models.Model):
         return self.title
     
 class Item(models.Model):
-    page = models.ForeignKey(Page, related_name='items')
+    church = models.ForeignKey(Church, related_name='news_items')
     title = models.CharField(max_length=200)
     image = models.FileField(storage=upload_storage, blank=True)
     content = models.TextField(max_length=5000)
@@ -111,14 +113,31 @@ class Item(models.Model):
     def __str__(self):
         return self.title
     
+    class Meta:
+        ordering = ['sort_order']
+    
 class Form(models.Model):
     church = models.ForeignKey(Church, related_name='forms')
     name = models.CharField(max_length=200)
     recipient = models.CharField(max_length=500, help_text='a comma separated list of emails')
+    sort_order = models.IntegerField(default=0)
     
     def __str__(self):
         return self.name
     
+    def get_form(self):
+        return bulletin.forms.ContactForm(instance=self)
+    
+    class Meta:
+        ordering = ['sort_order']
+
+class FormSubmission(models.Model):
+    form = models.ForeignKey(Form, related_name='submissions')
+    content = models.CharField(max_length=5000)
+    
+    def __str__(self):
+        return self.form
+        
 class Field(models.Model):
     form = models.ForeignKey(Form, related_name='fields')
     name = models.CharField(max_length=200)
@@ -128,6 +147,9 @@ class Field(models.Model):
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        ordering = ['sort_order']
 
 class Choice(models.Model):
     field = models.ForeignKey(Field, related_name='choices')
@@ -141,6 +163,10 @@ class Passage(models.Model):
     book = models.CharField(max_length=200, choices=BOOK_CHOICES)
     chapter = models.IntegerField(blank=True, null=True)
     verse = models.CharField(max_length=200, blank=True)
+    sort_order = models.IntegerField(default=0)
     
     def __str__(self):
-        return self.book + ' ' + str(self.chapter) + ':' + self.verse
+        return self.book.title() + ' ' + str(self.chapter) + ':' + self.verse
+    
+    class Meta:
+        ordering = ['sort_order']

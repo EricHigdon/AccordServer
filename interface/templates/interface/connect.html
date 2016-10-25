@@ -1,0 +1,113 @@
+{% extends 'interface/dashboard_base.html' %}
+{% load static %}
+{% block dashboard %}
+    <h1 class="page-header">Connect</h1>
+    <div class="flexbox sortable">
+        {% for form_item in church.forms.all %}
+            <div class="col-xs-6 col-sm-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
+                <div class="item-header">
+                    <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                    <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'delete_form' form_item.pk %}"><i class="fa fa-trash"></i></a>
+                </div>
+                <h4>{{ form_item.name }}</h4>
+                <p>{{ form_item.get_form.as_p }}</p>
+            </div>
+        {% endfor %}
+        <div class="col-xs-6 col-sm-3 news-item add-item" data-toggle="modal" data-target="#addForm">
+           <i class="fa fa-plus"></i>
+           <p>Add A Form</p>
+        </div>
+    </div>
+     <div id="addForm" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <form method="POST" class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add A Form</h4>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <h4>Fields</h4>
+                    {{ field_form.management_form }}
+                    <div class="field-sortable">
+                        {% for fields in field_form %}
+                            <div class="field hidden">
+                                <a data-toggle="collapse" data-target="#field-collapse{{ forloop.counter0 }}"><span class="glyphicon glyphicon-sort sort-handle" aria-hidden="true"></span><span class="field-title">New Field</span><span class="pull-right">{{ fields.DELETE.label_tag }}{{ fields.DELETE }}</span></a>
+                                <div id="field-collapse{{ forloop.counter0 }}" class="collapse">
+                                    <p>
+                                        {{ fields.name.label_tag }}
+                                        {{ fields.name }}
+                                    </p>
+                                    <p>
+                                        {{ fields.field_type.label_tag }}
+                                        {{ fields.field_type }}
+                                    </p>
+                                    <p>
+                                        {{ fields.required.label_tag }}
+                                        {{ fields.required }}
+                                    </p>
+                                    <p>
+                                        {{ fields.sort_order }}
+                                    </p>
+                                    <p>
+                                        {{ fields.id }}
+                                    </p>
+                                    <p>
+                                        {{ fields.form }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a class="addField"><i class="fa fa-plus"></i> Add a Field</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Save Form"/>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('.field.hidden').each(function(index) {
+                var field = $(this);
+                if (index == 0 || field.find('.field-name').val()) {
+                    field.removeClass('hidden');
+                    if(field.find('.field-name').val()) {
+                        field.find('.field-title').html(field.find('.field-name').val());
+                    }
+                    else {
+                        field.find('a').click();
+                    }
+                }
+                field.find('.field-name').on('change', function() {
+                    if(field.find('.field-name').val()) {
+                        field.find('a').find('.field-title').html($(this).val());
+                    }
+                    else {
+                        field.find('a').find('.field-title').html('New Field');
+                    }
+                });
+            });
+            $('.addField').click(function(){
+                $('.field.hidden:first').removeClass('hidden');
+                $('.field').not('.hidden').each(function(index) {
+                    $(this).find('.sort-order').val(index);
+                });
+            });
+        });
+    </script>
+    {% if form.errors or edit_pk %}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#addForm').modal('show');
+            });
+        </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'interface/dashboard_base.html' %}
+{% block dashboard %}
+    <h1 class="page-header">Dashboard</h1>
+    <div class="submissions">
+        <h4>Latest Form Submissions</h4>
+        {% for submission in form_submissions %}
+            <a data-toggle="collapse" data-target="#field-collapse{{ forloop.counter0 }}" class="submission-title">{{ submission.form }}</a>
+            <div id="field-collapse{{ forloop.counter0 }}" class="collapse submission-content">
+                {{ submission.content|safe }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

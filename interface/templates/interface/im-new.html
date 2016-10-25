@@ -1,0 +1,10 @@
+{% extends 'interface/dashboard_base.html' %}
+{% load static %}
+{% block dashboard %}
+    <h1 class="page-header">I&rsquo;m New</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <p>{{ form.im_new }}</p>
+        <input type="submit" class="btn btn-primary pull-right" value="Save"/>
+    </form>
+{% endblock %}
