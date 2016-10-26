@@ -4,19 +4,23 @@
     <h1 class="page-header">Service</h1>
     <div class="flexbox sortable">
         {% for passage in church.passages.all %}
-            <div class="col-xs-6 col-sm-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ passage.pk }}">
-                <div class="item-header">
-                    <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                    <a href="?edit_pk={{ passage.pk }}"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'delete_passage' passage.pk %}"><i class="fa fa-trash"></i></a>
+            <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ passage.pk }}">
+                <div class="background">
+                    <div class="item-header">
+                        <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                        <a href="?edit_pk={{ passage.pk }}"><i class="fa fa-edit"></i></a>
+                        <a href="{% url 'delete_passage' passage.pk %}"><i class="fa fa-trash"></i></a>
+                    </div>
+                    <h3>{{ passage }}</h3>
                 </div>
-                <h3>{{ passage }}</h3>
             </div>
         {% endfor %}
-        <div class="col-xs-6 col-sm-3 news-item add-item" data-toggle="modal" data-target="#addPassage">
-           <i class="fa fa-plus"></i>
-           <p>Add A Passage</p>
-        </div>
+        <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+           <div class="background">
+               <i class="fa fa-plus"></i>
+               <p>Add A Passage</p>
+           </div>
+        </a>
     </div>
     <div id="addPassage" class="modal fade" role="dialog">
         <div class="modal-dialog">

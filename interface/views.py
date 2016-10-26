@@ -24,7 +24,7 @@ def dashboard(request):
         church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
-    form_submissions = FormSubmission.objects.filter(form__church=church)
+    form_submissions = FormSubmission.objects.filter(form__church=church)[:5]
     context = {
         'form_submissions': form_submissions,
         'church': church,
@@ -41,7 +41,10 @@ def news(request):
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
-        edit_item = Item.objects.get(pk=edit_pk)
+        try:
+            edit_item = Item.objects.get(pk=edit_pk)
+        except Item.DoesNotExist:
+            edit_item = None
     else:
         edit_item = None
     if request.method == 'POST':
@@ -122,7 +125,10 @@ def connect(request):
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
-        edit_form = Form.objects.get(pk=edit_pk)
+        try:
+            edit_form = Form.objects.get(pk=edit_pk)
+        except Form.DoesNotExist:
+            edit_form = None
     else:
         edit_form = None
     if request.method == 'POST':
@@ -179,7 +185,10 @@ def service(request):
         return redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
-        edit_passage = Passage.objects.get(pk=edit_pk)
+        try:
+            edit_passage = Passage.objects.get(pk=edit_pk)
+        except Passage.DoesNotExist:
+            edit_passage = None
     else:
         edit_passage = None
     if request.method == 'POST':

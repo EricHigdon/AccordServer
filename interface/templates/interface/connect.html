@@ -4,20 +4,24 @@
     <h1 class="page-header">Connect</h1>
     <div class="flexbox sortable">
         {% for form_item in church.forms.all %}
-            <div class="col-xs-6 col-sm-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
-                <div class="item-header">
-                    <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                    <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'delete_form' form_item.pk %}"><i class="fa fa-trash"></i></a>
+            <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
+                <div class="background">
+                    <div class="item-header">
+                        <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                        <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
+                        <a href="{% url 'delete_form' form_item.pk %}"><i class="fa fa-trash"></i></a>
+                    </div>
+                    <h4>{{ form_item.name }}</h4>
+                    <p>{{ form_item.get_form.as_p }}</p>
                 </div>
-                <h4>{{ form_item.name }}</h4>
-                <p>{{ form_item.get_form.as_p }}</p>
             </div>
         {% endfor %}
-        <div class="col-xs-6 col-sm-3 news-item add-item" data-toggle="modal" data-target="#addForm">
-           <i class="fa fa-plus"></i>
-           <p>Add A Form</p>
-        </div>
+        <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+           <div class="background">
+               <i class="fa fa-plus"></i>
+               <p>Add A Form</p>
+           </div>
+        </a>
     </div>
      <div id="addForm" class="modal fade" role="dialog">
         <div class="modal-dialog">

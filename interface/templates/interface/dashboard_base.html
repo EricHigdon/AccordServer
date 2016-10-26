@@ -1,34 +1,16 @@
 {% extends 'interface/base.html' %}
+{% block body_classes %}dashboard{% endblock %}
 {% block content %}
     <style>
-        .footer-row {
-            margin: 0px 40px 0px 55px;
-        }
-        .container.footer {
-            margin-left: 16.66666667%;
-            width: 83.33333333%;
-        }
-        .navbar-default .navbar-nav>.dashboard>a {
-            color: #d9230f;
-            background-color: transparent;
-        }
-        .nav-sidebar > .{{ active }} > a {
+        .dashboard .nav-sidebar > .{{ active }} > a {
             color: #fff;
             background-color: #1852A4;
-        }
-        @media (min-width: 768px) and (max-width: 991px) {
-            .footer-row {
-                margin: 0px 40px 0px 65px;
-            }
-            .container.footer {
-                margin-left: 25%;
-                width: 75%;
-            }
         }
     </style>
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-4 col-sm-3 col-md-2 sidebar">
+                <i class="fa fa-chevron-right handle"></i>
                 <ul class="nav nav-sidebar">
                     <li class="overview"><a href="{% url 'dashboard' %}">Overview <span class="sr-only">(current)</span></a></li>
                     <li class="im-new"><a href="{% url 'im_new' %}">I&rsquo;m New</a></li>
@@ -37,7 +19,7 @@
                     <li class="service"><a href="{% url 'service' %}">Service</a></li>
                 </ul>
             </div>
-            <div class="col-xs-8 col-xs-offset-4 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-xs-11 col-xs-offset-0 col-mxs-8 col-mxs-offset-4 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                {% block dashboard %}
                {% endblock %}
             </div>

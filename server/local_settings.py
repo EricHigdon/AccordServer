@@ -5,9 +5,9 @@ PUSH_NOTIFICATIONS_SETTINGS = {
     #'APNS_CERTIFICATE': '/certs/accord/dist.pem',
     #'APNS_HOST': 'gateway.push.apple.com',
 }
-#STATIC_URL = '/static/'
-#UPLOAD_PATH = 'img/uploads/'
-#UPLOAD_URL = '/Users/erichigdon/venvs/churchapp/lib/python3.5/site-packages/django/contrib/admin/static/' + UPLOAD_PATH
+STATIC_URL = '/static/'
+UPLOAD_PATH = 'img/uploads/'
+UPLOAD_URL = '/Users/erichigdon/venvs/churchapp/lib/python3.5/site-packages/django/contrib/admin/static/' + UPLOAD_PATH
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

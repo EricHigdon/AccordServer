@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Accord | Connecting The Church Like Never Before</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="Accord is connecting the church like never before through affordable technology solutions.">
     <meta name="keywords" content="Accord,Church,App,Mobile,Web,Internet,Technology">    
 
@@ -20,8 +20,9 @@
     <meta name="theme-color" content="#1852A4">
     
     <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
-    <script   src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"   integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script   src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"   integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.touch-punch.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-te-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/accord.js' %}"></script>
     
@@ -39,7 +40,7 @@
         }
     </style>
 </head>
-<body class="{{ active }}">
+<body class="{{ active }} {% block body_classes %}{% endblock %}">
     {% include 'interface/header.html' %}
     {% block content %}
     {% endblock %}

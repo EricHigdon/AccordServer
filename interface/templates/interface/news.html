@@ -4,24 +4,28 @@
     <h1 class="page-header">News</h1>
     <div class="flexbox sortable">
         {% for news_item in church.news_items.all %}
-            <div class="col-xs-6 col-sm-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
-                <div class="item-header">
-                    <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                    <a href="?edit_pk={{ news_item.pk }}"><i class="fa fa-edit"></i></a>
-                    <a href="{% url 'delete_item' news_item.pk %}"><i class="fa fa-trash"></i></a>
+            <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
+                <div class="background">
+                    <div class="item-header">
+                        <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                        <a href="?edit_pk={{ news_item.pk }}"><i class="fa fa-edit"></i></a>
+                        <a href="{% url 'delete_item' news_item.pk %}"><i class="fa fa-trash"></i></a>
+                    </div>
+                    {% if news_item.image %}
+                        <img src="{% static 'img/uploads/' %}{{ news_item.image }}" alt="{{ news_item.title }}" />
+                    {% else %}
+                        <h3>{{ news_item.title }}</h3>
+                    {% endif %}
+                    <p>{{ news_item.content|safe }}</p>
                 </div>
-                {% if news_item.image %}
-                    <img src="{% static 'img/uploads/' %}{{ news_item.image }}" alt="{{ news_item.title }}" />
-                {% else %}
-                    <h3>{{ news_item.title }}</h3>
-                {% endif %}
-                <p>{{ news_item.content|safe }}</p>
             </div>
         {% endfor %}
-        <div class="col-xs-6 col-sm-3 news-item add-item" data-toggle="modal" data-target="#addItem">
-           <i class="fa fa-plus"></i>
-           <p>Add A News Item</p>
-        </div>
+        <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+           <div class="background">
+               <i class="fa fa-plus"></i>
+               <p>Add A News Item</p>
+           </div>
+        </a>
     </div>
     <div id="addItem" class="modal fade" role="dialog">
         <div class="modal-dialog">
