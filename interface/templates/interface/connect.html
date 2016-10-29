@@ -9,7 +9,7 @@
                     <div class="item-header">
                         <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
                         <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
-                        <a href="{% url 'delete_form' form_item.pk %}"><i class="fa fa-trash"></i></a>
+                        <a data-href="{% url 'delete_form' form_item.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
                     </div>
                     <h4>{{ form_item.name }}</h4>
                     <p>{{ form_item.get_form.as_p }}</p>
@@ -77,36 +77,22 @@
 
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('.field.hidden').each(function(index) {
-                var field = $(this);
-                if (index == 0 || field.find('.field-name').val()) {
-                    field.removeClass('hidden');
-                    if(field.find('.field-name').val()) {
-                        field.find('.field-title').html(field.find('.field-name').val());
-                    }
-                    else {
-                        field.find('a').click();
-                    }
-                }
-                field.find('.field-name').on('change', function() {
-                    if(field.find('.field-name').val()) {
-                        field.find('a').find('.field-title').html($(this).val());
-                    }
-                    else {
-                        field.find('a').find('.field-title').html('New Field');
-                    }
-                });
-            });
-            $('.addField').click(function(){
-                $('.field.hidden:first').removeClass('hidden');
-                $('.field').not('.hidden').each(function(index) {
-                    $(this).find('.sort-order').val(index);
-                });
-            });
-        });
-    </script>
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Delete Form?
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this form? This cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
     {% if form.errors or edit_pk %}
         <script type="text/javascript">
             $(document).ready(function(){

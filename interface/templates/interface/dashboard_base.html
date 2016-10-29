@@ -9,14 +9,19 @@
     </style>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-4 col-sm-3 col-md-2 sidebar">
+            <div class="col-xs-6 col-mxs-4 col-sm-3 col-md-2 sidebar">
                 <i class="fa fa-chevron-right handle"></i>
+                {% if church.logo %}
+                    <img class="church-logo" src="{{ static_url }}{{ upload_path }}{{ church.logo }}" alt="{{ church.name }}"/>
+                {% endif %}
                 <ul class="nav nav-sidebar">
-                    <li class="overview"><a href="{% url 'dashboard' %}">Overview <span class="sr-only">(current)</span></a></li>
-                    <li class="im-new"><a href="{% url 'im_new' %}">I&rsquo;m New</a></li>
-                    <li class="news"><a href="{% url 'news' %}">News</a></li>
-                    <li class="connect"><a href="{% url 'connect' %}">Connect</a></li>
-                    <li class="service"><a href="{% url 'service' %}">Service</a></li>
+                    <li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard <span class="sr-only">(current)</span></a></li>
+                    <li class="im-new"><a href="{% url 'im_new' %}"><i class="fa fa-user" aria-hidden="true"></i> I&rsquo;m New</a></li>
+                    <li class="news"><a href="{% url 'news' %}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a></li>
+                    <li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>
+ Connect</a></li>
+                    <li class="service"><a href="{% url 'service' %}"><i class="fa fa-book" aria-hidden="true"></i> Service</a></li>
+                    <li class="my-church"><a href="{% url 'my_church' %}"><i class="fa fa-users" aria-hidden="true"></i> My Church</a></li>
                 </ul>
             </div>
             <div class="col-xs-11 col-xs-offset-0 col-mxs-8 col-mxs-offset-4 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

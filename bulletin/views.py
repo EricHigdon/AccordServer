@@ -10,11 +10,17 @@ from .forms import *
 from .decorators import http_basic_auth
 
 # Create your views here.
-def api(request, slug):
+def modified(request, church_pk):
+    church = get_object_or_404(Church, pk=church_pk)
+    response = JsonResponse({'modified': church.modified}, safe=False)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+def api(request, church_pk):
     extra_classes = ''
     pages = []
     forms = []
-    church = get_object_or_404(Church, slug=slug)
+    church = get_object_or_404(Church, pk=church_pk)
     if request.user in church.admins.all():
         is_admin = True
     else:

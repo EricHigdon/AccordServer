@@ -87,14 +87,16 @@ BOOK_CHOICES = (
 # Create your models here.
 
 class Church(models.Model):
-    #admin = models.ForeignKey(User)
+    name = models.CharField(max_length=200)
     admins = models.ManyToManyField(User, related_name='church')
-    slug = models.SlugField(max_length=200)
-    modified_date = models.DateTimeField(default=timezone.now)
+    modified = models.DateTimeField(default=timezone.now)
     im_new = models.TextField(max_length=10000)
+    logo = models.ImageField(storage=upload_storage, blank=True)
+    address = models.CharField(max_length=500)
+    zip_code = models.IntegerField()
     
     def __str__(self):
-        return self.slug
+        return self.name
     
 class Page(models.Model):
     title = models.CharField(max_length=200)
@@ -107,7 +109,7 @@ class Page(models.Model):
 class Item(models.Model):
     church = models.ForeignKey(Church, related_name='news_items')
     title = models.CharField(max_length=200)
-    image = models.FileField(storage=upload_storage, blank=True)
+    image = models.ImageField(storage=upload_storage, blank=True)
     content = models.TextField(max_length=5000)
     sort_order = models.IntegerField(default=0)
     
@@ -167,7 +169,12 @@ class Passage(models.Model):
     sort_order = models.IntegerField(default=0)
     
     def __str__(self):
-        return self.book.title() + ' ' + str(self.chapter) + ':' + self.verse
+        reference = self.book.title()
+        if self.chapter:
+            reference += ' ' + str(self.chapter)
+            if self.verse:
+                reference += ':' + self.verse
+        return reference
     
     class Meta:
         ordering = ['sort_order', '-pk']
