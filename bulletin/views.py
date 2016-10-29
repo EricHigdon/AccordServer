@@ -95,6 +95,6 @@ def form(request, form_id):
     template = 'bulletin/form.html'
     form = get_object_or_404(Form, pk=form_id)
     formset = ContactForm(instance=form)
-    response = render(request, template, {'form': formset})
+    response = render(request, template, {'form': formset, 'contact_form': form})
     response['Access-Control-Allow-Origin'] = '*'
     return response

@@ -1,6 +1,19 @@
 <div class='page' data-page="form">
     <div class="page-content">
+        <style>
+            h1.form-header {
+                color: #fff;
+                font-size: 12pt;
+                display: block;
+                text-align: center;
+                margin-bottom: 0px;
+            }
+            form.list-block {
+                margin-top: 10px;
+            }
+        </style>
        <a href="index.html" class="back link"><i class="fa fa-angle-left"></i> <span>Back</span></a>
+       <h1 class="form-header">{{ contact_form.name }}</h1>
         <form method='POST' action='http://accordapp.com/contact/' class='list-block ajax-submit'>
 			{% csrf_token %}
             <ul>
