@@ -19,8 +19,8 @@
           <ul class="nav navbar-nav">
 <!--            <li class="home"><a href="/">Home</a></li>-->
             {% if user.is_authenticated %}
-                <li class="dashboard"><a href="{% url 'dashboard' %}">App</a></li>
-<!--                <li class="contact"><a href="/#contact">Display</a></li>-->
+<!--                <li class="dashboard"><a href="{% url 'dashboard' %}">App</a></li>
+                <li class="contact"><a href="/#contact">Display</a></li>-->
                 <li><a href="{% url 'logout' %}">Sign Out</a></li>
             {% else %}
                 <li><a href="{% url 'dashboard' %}">Sign In</a></li>

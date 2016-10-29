@@ -1,7 +1,7 @@
 <div class='page' data-page="form">
     <div class="page-content">
        <a href="index.html" class="back link"><i class="fa fa-angle-left"></i> <span>Back</span></a>
-        <form method='POST' action='http://accord.erichigdon.com/contact/' class='list-block ajax-submit'>
+        <form method='POST' action='http://accordapp.com/contact/' class='list-block ajax-submit'>
 			{% csrf_token %}
             <ul>
              {% for field in form.hidden_fields %}

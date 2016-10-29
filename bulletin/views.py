@@ -10,12 +10,14 @@ from .forms import *
 from .decorators import http_basic_auth
 
 # Create your views here.
+@http_basic_auth
 def modified(request, church_pk):
     church = get_object_or_404(Church, pk=church_pk)
     response = JsonResponse({'modified': church.modified}, safe=False)
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@http_basic_auth
 def api(request, church_pk):
     extra_classes = ''
     pages = []
@@ -46,6 +48,7 @@ def api(request, church_pk):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@http_basic_auth
 def contact(request):
     if request.method == 'POST':
         post_data = dict(request.POST)
@@ -80,7 +83,7 @@ def contact(request):
                 for key, upload in file_data:
                     email.attach(upload.name, upload.read(), upload.content_type)
                 email.attach_alternative(msg_html, "text/html")
-                #email.send()
+                email.send()
             except Church.DoesNotExist:
                 print('error')
     response = JsonResponse({'success':True})

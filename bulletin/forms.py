@@ -17,30 +17,33 @@ class ContactForm(forms.Form):
         self.fields['form'] = forms.CharField(initial=instance.pk, widget=forms.HiddenInput())
         self.fields['recipient'] = forms.CharField(initial=instance.recipient, widget=forms.HiddenInput())
         for field in instance.fields.all().order_by('sort_order'):
+            placeholder = field.name
+            if field.required:
+                placeholder += '*'
             if field.field_type == 'char':
                 self.fields[field.name] = forms.CharField(
                     required = field.required,
-                    widget = forms.TextInput(attrs={'placeholder': field.name})
+                    widget = forms.TextInput(attrs={'placeholder': placeholder})
                 )
             if field.field_type == 'email':
                 self.fields[field.name] = forms.EmailField(
                     required = field.required,
-                    widget = forms.EmailInput(attrs={'placeholder': field.name})
+                    widget = forms.EmailInput(attrs={'placeholder': placeholder})
                 )
             if field.field_type == 'phone':
                 self.fields[field.name] = forms.CharField(
                     required = field.required,
-                    widget = PhoneInput(attrs={'placeholder': field.name})
+                    widget = PhoneInput(attrs={'placeholder': placeholder})
                 )
             elif field.field_type == 'text':
                 self.fields[field.name] = forms.CharField(
                     required = field.required,
-                    widget=forms.Textarea(attrs={'placeholder': field.name})
+                    widget=forms.Textarea(attrs={'placeholder': placeholder})
                 )
             elif field.field_type == 'int':
                 self.fields[field.name] = forms.IntegerField(
                     required = field.required,
-                    widget=forms.NumberInput(attrs={'placeholder': field.name})
+                    widget=forms.NumberInput(attrs={'placeholder': placeholder})
                 )
             elif field.field_type == 'bool':
                 self.fields[field.name] = forms.BooleanField(
