@@ -17,6 +17,5 @@ urlpatterns = [
     url(r'^service/reorder/$', views.reorder_passage, name='reorder_passage'),
     url(r'^my-church/$', views.my_church, name='my_church'),
     url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, name='logout'),
-    #url(r'^(?P<slug>[\w]+)/$', views.main, name='index'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 ]
