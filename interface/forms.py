@@ -1,6 +1,8 @@
 from django import forms
 from django.conf import settings
 from bulletin.models import *
+from display.models import *
+from push_notifications.models import *
 
 class ImageInput(forms.ClearableFileInput):
     template_with_initial = (
@@ -52,3 +54,52 @@ class MyChurchForm(forms.ModelForm):
             'address': forms.TextInput(attrs={'class': 'html-editor'}),
             'logo': ImageInput()
         }
+        
+class MessageForm(forms.Form):
+    message = forms.CharField(max_length=200)
+    sound = forms.BooleanField(
+        initial=True,
+        help_text='Determines whether or not the user will be notified with sound/vibration.',
+        required=False    
+    )
+    force_update = forms.BooleanField(
+        help_text='This forces older versions of the app to clear the cache a pull all new content.',
+        required=False
+    )
+    
+    def save(self, *args, **kwargs):
+        apn_devices = APNSDevice.objects.filter(active=True)
+        gcm_devices = GCMDevice.objects.filter(active=True)
+        if self.cleaned_data['sound']:
+            apn_devices.send_message(
+                self.cleaned_data['message'],
+                sound='default',
+                content_available=self.cleaned_data['force_update']
+            )
+            gcm_devices.send_message(
+                self.cleaned_data['message'],
+                sound='default',
+                content_available=self.cleaned_data['force_update']
+            )
+        else:
+            apn_devices.send_message(
+                self.cleaned_data['message'],
+                content_available=self.cleaned_data['force_update']
+            )
+            gcm_devices.send_message(
+                self.cleaned_data['message'],
+                content_available=self.cleaned_data['force_update']
+            )
+        
+class SlideForm(forms.ModelForm):
+    class Meta:
+        model = Slide
+        exclude = ('church', 'status',)
+        widgets = {
+            'start_date': forms.TextInput(attrs={'class': 'date'}),
+            'end_date': forms.TextInput(attrs={'class': 'date'}),
+        }
+    
+    def save(self, church):
+        self.instance.church = church
+        super(SlideForm, self).save()

@@ -17,10 +17,10 @@
     </div>
         <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-<!--            <li class="home"><a href="/">Home</a></li>-->
             {% if user.is_authenticated %}
-<!--                <li class="dashboard"><a href="{% url 'dashboard' %}">App</a></li>
-                <li class="contact"><a href="/#contact">Display</a></li>-->
+                <li class="dashboard"><a href="{% url 'dashboard' %}">App</a></li>
+                <li class="display"><a href="{% url 'display' %}">Display</a></li>
+                <li class="my-church"><a href="{% url 'my_church' %}">My Church</a></li>
                 <li><a href="{% url 'logout' %}">Sign Out</a></li>
             {% else %}
                 <li><a href="{% url 'dashboard' %}">Sign In</a></li>

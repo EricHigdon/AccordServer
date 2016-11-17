@@ -15,7 +15,10 @@ urlpatterns = [
     url(r'^service/$', views.service, name='service'),
     url(r'^service/delete/(?P<item_pk>[0-9]+)/$', views.delete_passage, name='delete_passage'),
     url(r'^service/reorder/$', views.reorder_passage, name='reorder_passage'),
+    url(r'^send-message/$', views.send_message, name='send_message'),
     url(r'^my-church/$', views.my_church, name='my_church'),
+    url(r'^display/$', views.display, name='display'),
+    url(r'^display/delete/(?P<item_pk>[0-9]+)/$', views.delete_slide, name='delete_slide'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 ]

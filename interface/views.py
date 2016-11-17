@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from bulletin.models import *
+from display.models import *
 from .forms import *
 from django.forms import inlineformset_factory
 from bulletin.decorators import http_basic_auth
@@ -191,7 +192,11 @@ def delete_form(request, form_pk):
 @csrf_exempt
 @http_basic_auth
 def reorder_form(request):
-    changed = Falses
+    try:
+        church = Church.objects.get(admins=request.user)
+    except Church.DoesNotExist:
+        return redirect('create_church')
+    changed = False
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
         for item in data:
@@ -296,3 +301,71 @@ def my_church(request):
         'active': 'my-church'
     }
     return render(request, template, context)
+
+@login_required
+def send_message(request):
+    template = 'interface/send-message.html'
+    try:
+        church = Church.objects.get(admins=request.user)
+    except Church.DoesNotExist:
+        return redirect('create_church')
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = MessageForm()
+    context = {
+        'static_url': settings.STATIC_URL,
+        'upload_path': settings.UPLOAD_PATH,
+        'form': form,
+        'church': church,
+        'active': 'send-message'
+    }
+    return render(request, template, context)
+
+@login_required
+def display(request):
+    template = 'interface/display.html'
+    try:
+        church = Church.objects.get(admins=request.user)
+    except Church.DoesNotExist:
+        return redirect('create_church')
+    edit_pk = request.GET.get('edit_pk', None)
+    if edit_pk is not None:
+        try:
+            edit_slide = Slide.objects.get(pk=edit_pk)
+        except Slide.DoesNotExist:
+            edit_slide = None
+    else:
+        edit_slide = None
+    if request.method == 'POST':
+        print(request.FILES)
+        form = SlideForm(request.POST, request.FILES, instance=edit_slide)
+        if form.is_valid():
+            form.save(church)
+            form = SlideForm()
+            if edit_pk is not None:
+                return redirect('display')
+            church.modified = timezone.now()
+            church.save()
+    else:
+        form = SlideForm(instance=edit_slide)
+    context = {
+        'static_url': settings.STATIC_URL,
+        'upload_path': settings.UPLOAD_PATH,
+        'edit_pk': edit_pk,
+        'form': form,
+        'church': church,
+        'active': 'display'
+    }
+    return render(request, template, context)
+
+@login_required
+def delete_slide(request, item_pk):
+    item = Slide.objects.get(pk=item_pk)
+    if request.user in slide.church.admins.all():
+        item.delete()
+        item.church.modified = timezone.now()
+        item.church.save()
+    return redirect('display')

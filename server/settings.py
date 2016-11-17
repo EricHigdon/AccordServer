@@ -79,7 +79,7 @@ TEMPLATES = [
 
 PUSH_NOTIFICATIONS_SETTINGS = {
     'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-    'APNS_CERTIFICATE': 'dist.pem',
+    'APNS_CERTIFICATE': '/certs/accord/dist.pem',
 }
 
 REST_FRAMEWORK = {
@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ehigdon_accord',
+        'NAME': 'ehigdon_accordapp',
         'USER': 'ehigdon_accord',
         'PASSWORD': 't)6hq6evC.@fyq@^xh',
         'HOST': '198.38.82.92',   # Or an IP Address that your DB is hosted on
@@ -158,8 +158,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 UPLOAD_PATH = 'img/uploads/'
-UPLOAD_URL = '/home3/ehigdon/public_html/static/accord/' + UPLOAD_PATH
-STATIC_URL = 'https://cdn.erichigdon.com/accord/'
+UPLOAD_URL = '/home3/ehigdon/public_html/static/accordapp/' + UPLOAD_PATH
+STATIC_URL = 'https://cdn.erichigdon.com/accordapp/'
 
 try:
     from server.local_settings import *

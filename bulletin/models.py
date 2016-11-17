@@ -112,6 +112,8 @@ class Item(models.Model):
     image = models.ImageField(storage=upload_storage, blank=True)
     content = models.TextField(max_length=5000)
     sort_order = models.IntegerField(default=0)
+    form = models.ForeignKey('Form', blank=True, null=True)
+    link_text = models.CharField(max_length=200, blank=True)
     
     def __str__(self):
         return self.title
@@ -139,7 +141,10 @@ class FormSubmission(models.Model):
     content = models.CharField(max_length=5000)
     
     def __str__(self):
-        return self.form
+        return self.form.name
+    
+    class Meta:
+        ordering = ['-id']
         
 class Field(models.Model):
     form = models.ForeignKey(Form, related_name='fields')

@@ -1,0 +1,10 @@
+{% extends 'interface/dashboard_base.html' %}
+{% load static %}
+{% block dashboard %}
+    <h1 class="page-header">Notifications</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <p>{{ form.as_p }}</p>
+        <input type="submit" class="btn btn-primary pull-right oneClickButton" value="Send"/>
+    </form>
+{% endblock %}
