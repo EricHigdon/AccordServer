@@ -54,7 +54,6 @@ def news(request):
     else:
         edit_item = None
     if request.method == 'POST':
-        print(request.FILES)
         form = NewsItemForm(request.POST, request.FILES, instance=edit_item)
         if form.is_valid():
             form.save(church)
@@ -340,7 +339,6 @@ def display(request):
     else:
         edit_slide = None
     if request.method == 'POST':
-        print(request.FILES)
         form = SlideForm(request.POST, request.FILES, instance=edit_slide)
         if form.is_valid():
             form.save(church)
