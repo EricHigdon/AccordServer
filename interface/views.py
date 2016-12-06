@@ -185,8 +185,8 @@ def delete_form(request, form_pk):
     form = Form.objects.get(pk=form_pk)
     if request.user in form.church.admins.all():
         form.delete()
-        church.modified = timezone.now()
-        church.save()
+        form.church.modified = timezone.now()
+        form.church.save()
     return redirect('connect')
 
 @csrf_exempt
@@ -254,8 +254,8 @@ def delete_passage(request, item_pk):
     passage = Passage.objects.get(pk=item_pk)
     if request.user in passage.church.admins.all():
         passage.delete()
-        church.modified = timezone.now()
-        church.save()
+        passage.church.modified = timezone.now()
+        passage.church.save()
     return redirect('service')
 
 @csrf_exempt
@@ -366,6 +366,4 @@ def delete_slide(request, item_pk):
     item = Slide.objects.get(pk=item_pk)
     if request.user in slide.church.admins.all():
         item.delete()
-        item.church.modified = timezone.now()
-        item.church.save()
     return redirect('display')
