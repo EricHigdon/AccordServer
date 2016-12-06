@@ -361,7 +361,7 @@ def display(request):
 
 @login_required
 def delete_slide(request, item_pk):
-    item = Slide.objects.get(pk=item_pk)
+    slide = Slide.objects.get(pk=item_pk)
     if request.user in slide.church.admins.all():
-        item.delete()
+        slide.delete()
     return redirect('display')
