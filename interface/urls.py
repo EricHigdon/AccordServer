@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^news/delete/(?P<item_pk>[0-9]+)/$', views.delete_item, name='delete_item'),
     url(r'^news/reorder/$', views.reorder_item, name='reorder_item'),
     url(r'^im-new/$', views.im_new, name='im_new'),
+    url(r'^change-password/$', auth_views.password_change, {'post_change_redirect':'my_church', 'template_name':'interface/password-change.html'}, name='password_change'),
     url(r'^connect/$', views.connect, name='connect'),
     url(r'^connect/delete/(?P<form_pk>[0-9]+)/$', views.delete_form, name='delete_form'),
     url(r'^connect/reorder/$', views.reorder_form, name='reorder_form'),

@@ -2,6 +2,7 @@
 {% block content %}
     <div class="container">
         <h1 class="page-header">My Church</h1>
+		<p><a href="{% url 'password_change' %}">Change Password</a></p>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <p>{{ form.as_p }}</p>

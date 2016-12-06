@@ -8,6 +8,11 @@ import random
 from .models import *
 from .forms import *
 from .decorators import http_basic_auth
+import base64
+import hmac
+import hashlib
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Create your views here.
 def modified(request, church_pk):
