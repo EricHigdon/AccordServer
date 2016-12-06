@@ -16,7 +16,7 @@ class Slide(models.Model):
     church = models.ForeignKey(Church, related_name='slides')
     name = models.CharField(max_length=200, unique=True)
     image = models.FileField(storage=upload_storage, blank=True)
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=SLIDE_STATUSES)
     class Meta:
