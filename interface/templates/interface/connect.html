@@ -2,8 +2,9 @@
 {% load static %}
 {% block dashboard %}
     <h1 class="page-header">Connect</h1>
+    <h2>Current Forms</h2>
     <div class="flexbox sortable">
-        {% for form_item in church.forms.all %}
+        {% for form_item in current_forms %}
             <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
                 <div class="background">
                     <div class="item-header">
@@ -23,6 +24,57 @@
            </div>
         </a>
     </div>
+    
+    {% if upcoming_forms %}
+        <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed">Upcoming Forms</h2>
+        <div id="upcoming" class="flexbox sortable collapse">
+            {% for form_item in upcoming_forms %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_form' form_item.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <h4>{{ form_item.name }}</h4>
+                        <p>{{ form_item.get_form.as_p }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+               <div class="background">
+                   <i class="fa fa-plus"></i>
+                   <p>Add A Form</p>
+               </div>
+            </a>
+        </div>
+    {% endif %}
+    
+    {% if past_forms %}
+        <h2 data-toggle="collapse" data-target="#past" class="collapsed">Past Forms</h2>
+        <div id="past" class="flexbox sortable collapse">
+            {% for form_item in past_forms %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?edit_pk={{ form_item.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_form' form_item.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <h4>{{ form_item.name }}</h4>
+                        <p>{{ form_item.get_form.as_p }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+               <div class="background">
+                   <i class="fa fa-plus"></i>
+                   <p>Add A Form</p>
+               </div>
+            </a>
+        </div>
+    {% endif %}
+    
      <div id="addForm" class="modal fade" role="dialog">
         <div class="modal-dialog">
 

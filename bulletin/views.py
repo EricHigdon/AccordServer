@@ -1,23 +1,66 @@
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-import random
+from django.utils import timezone
 from .models import *
 from .forms import *
 from .decorators import http_basic_auth
-import base64
-import hmac
-import hashlib
-from django.views.decorators.csrf import csrf_exempt
-import json
+import feedparser
 
 # Create your views here.
 def modified(request, church_pk):
     church = get_object_or_404(Church, pk=church_pk)
-    response = JsonResponse({'modified': church.modified}, safe=False)
+    modified = church.modified
+    
+    latest_form_start = Form.objects.current().filter(
+        church_id=church.pk
+    ).order_by('-start_datetime')
+    if latest_form_start:
+        latest_form_start = latest_form_start[0].start_datetime
+        if latest_form_start is not None and latest_form_start > modified:
+            modified = latest_form_start
+    latest_form_end = Form.objects.past().filter(
+        church_id=church.pk
+    ).order_by('-end_datetime')
+    if latest_form_end:
+        latest_form_end = latest_form_end[0].end_datetime
+        if latest_form_end is not None and latest_form_end > modified:
+            modified = latest_form_end
+        
+    latest_news_start = Item.objects.current().filter(
+        church_id=church.pk
+    ).order_by('-start_datetime')
+    if latest_news_start:
+        latest_news_start = latest_news_start[0].start_datetime
+        if latest_news_start is not None and latest_news_start > modified:
+            modified = latest_news_start
+    latest_news_end = Item.objects.past().filter(
+        church_id=church.pk
+    ).order_by('-end_datetime')
+    if latest_news_end:
+        latest_news_end = latest_news_end[0].end_datetime
+        if latest_news_end is not None and latest_news_end > modified:
+            modified = latest_news_end
+        
+    latest_passage_start = Passage.objects.current().filter(
+        church_id=church.pk
+    ).order_by('-start_datetime')
+    if latest_passage_start:
+        latest_passage_start = latest_passage_start[0].start_datetime
+        if latest_passage_start is not None and latest_passage_start > modified:
+            modified = latest_passage_start
+    latest_passage_end = Passage.objects.past().filter(
+        church_id=church.pk
+    ).order_by('-end_datetime')
+    if latest_passage_end:
+        latest_passage_end = latest_passage_end[0].end_datetime
+        if latest_passage_end is not None and latest_passage_end > modified:
+            modified = latest_passage_end
+    
+    response = JsonResponse({'modified': modified}, safe=False)
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -31,8 +74,11 @@ def api(request, church_pk):
     else:
         is_admin = False
     page_objects = church.pages.all()
-    forms = church.forms.all()
-    items = church.news_items.all().order_by('sort_order')
+    forms = Form.objects.current().filter(church_id=church.pk)
+    items = Item.objects.current().filter(church_id=church.pk)
+    passages = Passage.objects.current().filter(church_id=church.pk)
+    feed = feedparser.parse('https://fwbcpodcast.wordpress.com/feed/')['entries']
+            
     for page in page_objects:
         if page != page_objects[0]:
             extra_classes = 'cached'
@@ -40,10 +86,12 @@ def api(request, church_pk):
         c = RequestContext(request, {
             'static_url': settings.STATIC_URL,
             'items': items,
+            'passages': passages,
             'page': page,
             'extra_classes': extra_classes,
             'is_admin': is_admin,
             'forms': forms,
+            'feed': feed[:10],
             'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})

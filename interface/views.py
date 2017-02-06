@@ -64,12 +64,18 @@ def news(request):
             church.save()
     else:
         form = NewsItemForm(instance=edit_item)
+    current_items = Item.objects.current().filter(church_id=church.pk)
+    upcoming_items = Item.objects.upcoming().filter(church_id=church.pk)
+    past_items = Item.objects.past().filter(church_id=church.pk)
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
         'edit_pk': edit_pk,
         'form': form,
         'church': church,
+        'current_items': current_items,
+        'upcoming_items': upcoming_items,
+        'past_items': past_items,
         'active': 'news'
     }
     return render(request, template, context)
@@ -168,6 +174,9 @@ def connect(request):
     else:
         form = ConnectForm(instance=edit_form)
         field_form = FieldFormSet(instance=edit_form)
+    current_forms = Form.objects.current().filter(church_id=church.pk)
+    upcoming_forms = Form.objects.upcoming().filter(church_id=church.pk)
+    past_forms = Form.objects.past().filter(church_id=church.pk)
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
@@ -175,6 +184,9 @@ def connect(request):
         'form': form,
         'field_form': field_form,
         'church': church,
+        'current_forms': current_forms,
+        'upcoming_forms': upcoming_forms,
+        'past_forms': past_forms,
         'active': 'connect'
     }
     return render(request, template, context)
@@ -238,12 +250,18 @@ def service(request):
                 return redirect('service')
     else:
         form = PassageItemForm(instance=edit_passage)
+    current_passages = Passage.objects.current().filter(church_id=church.pk)
+    upcoming_passages = Passage.objects.upcoming().filter(church_id=church.pk)
+    past_passages = Passage.objects.past().filter(church_id=church.pk)
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
         'edit_pk': edit_pk,
         'form': form,
         'church': church,
+        'current_passages': current_passages,
+        'upcoming_passages': upcoming_passages,
+        'past_passages': past_passages,
         'active': 'service'
     }
     return render(request, template, context)
@@ -365,3 +383,28 @@ def delete_slide(request, item_pk):
     if request.user in slide.church.admins.all():
         slide.delete()
     return redirect('display')
+
+@login_required
+def home(request):
+    template = 'interface/home.html'
+    try:
+        church = Church.objects.get(admins=request.user)
+    except Church.DoesNotExist:
+        return redirect('create_church')
+    if request.method == 'POST':
+        form = HomeForm(request.POST, request.FILES, instance=church)
+        if form.is_valid():
+            form.save()
+            church.modified = timezone.now()
+            church.save()
+            form = HomeForm(instance=church)
+    else:
+        form = HomeForm(instance=church)
+    context = {
+        'static_url': settings.STATIC_URL,
+        'upload_path': settings.UPLOAD_PATH,
+        'form': form,
+        'church': church,
+        'active': 'home'
+    }
+    return render(request, template, context)

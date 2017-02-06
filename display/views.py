@@ -20,6 +20,6 @@ class SlideViewSet(viewsets.ReadOnlyModelViewSet):
         church = get_object_or_404(Church, admins=self.request.user)
         now = timezone.now()
         return church.slides.filter(
-            Q(start_date__lte=now, end_date__gte=now) |
-            Q(start_date__lte=now, end_date__isnull=True)
-        ).all()
+            Q(Q(start_date__isnull=True) | Q(start_date__lte=now))
+            & Q(Q(end_date__isnull=True) | Q(end_date__gte=now))
+        )
