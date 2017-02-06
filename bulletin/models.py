@@ -139,6 +139,7 @@ class Church(models.Model):
         blank=True,
         null=True
     )
+    podcast_url = models.URLField(blank=True)
     
     def __str__(self):
         return self.name
@@ -190,7 +191,8 @@ class Form(models.Model):
         ordering = ['sort_order', '-end_datetime']
 
 class FormSubmission(models.Model):
-    form = models.ForeignKey(Form, related_name='submissions')
+    form = models.ForeignKey(Form, related_name='submissions', blank=True, null=True)
+    form_name = models.CharField(max_length=200)
     content = models.CharField(max_length=5000)
     
     def __str__(self):

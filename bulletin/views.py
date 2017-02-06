@@ -77,7 +77,10 @@ def api(request, church_pk):
     forms = Form.objects.current().filter(church_id=church.pk)
     items = Item.objects.current().filter(church_id=church.pk)
     passages = Passage.objects.current().filter(church_id=church.pk)
-    feed = feedparser.parse('https://fwbcpodcast.wordpress.com/feed/')['entries']
+    if church.podcast_url:
+        feed = feedparser.parse(church.podcast_url)['entries']
+    else:
+        feed = None
             
     for page in page_objects:
         if page != page_objects[0]:
@@ -121,7 +124,7 @@ def contact(request):
                 }
                 msg_plain = render_to_string('bulletin/contact-email.txt', email_context)
                 msg_html = render_to_string('bulletin/contact-email.html', email_context)
-                submission = FormSubmission(form=form, content=msg_html)
+                submission = FormSubmission(form_name=form.name, content=msg_html)
                 submission.save()
                 email = EmailMultiAlternatives(
                     form.name,
