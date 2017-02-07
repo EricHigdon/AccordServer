@@ -26,7 +26,7 @@
     </div>
     
     {% if upcoming_forms %}
-        <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed">Upcoming Forms</h2>
+        <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed arrow-collapse">Upcoming Forms</h2>
         <div id="upcoming" class="flexbox sortable collapse">
             {% for form_item in upcoming_forms %}
                 <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">
@@ -51,7 +51,7 @@
     {% endif %}
     
     {% if past_forms %}
-        <h2 data-toggle="collapse" data-target="#past" class="collapsed">Past Forms</h2>
+        <h2 data-toggle="collapse" data-target="#past" class="collapsed arrow-collapse">Past Forms</h2>
         <div id="past" class="flexbox sortable collapse">
             {% for form_item in past_forms %}
                 <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ form_item.pk }}">

@@ -78,7 +78,7 @@ def api(request, church_pk):
     items = Item.objects.current().filter(church_id=church.pk)
     passages = Passage.objects.current().filter(church_id=church.pk)
     if church.podcast_url:
-        feed = feedparser.parse(church.podcast_url)['entries']
+        feed = feedparser.parse(church.podcast_url)['entries'][:10]
     else:
         feed = None
             
@@ -94,7 +94,7 @@ def api(request, church_pk):
             'extra_classes': extra_classes,
             'is_admin': is_admin,
             'forms': forms,
-            'feed': feed[:10],
+            'feed': feed,
             'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})
