@@ -86,6 +86,41 @@ BOOK_CHOICES = (
 )
 # Create your models here.
 
+class ScheduledManager(models.Manager):
+    def current(self):
+        now = timezone.now()
+        qs = super().get_queryset().filter(
+            models.Q(
+                models.Q(start_datetime__isnull=True)
+                | models.Q(start_datetime__lte=now)
+            )
+            & models.Q(
+                models.Q(end_datetime__isnull=True)
+                | models.Q(end_datetime__gte=now)
+            )
+        )
+        return qs
+    
+    def upcoming(self):
+        now = timezone.now()
+        qs = super().get_queryset().filter(
+            models.Q(
+                models.Q(start_datetime__isnull=False)
+                & models.Q(start_datetime__gte=now)
+            )
+        )
+        return qs
+    
+    def past(self):
+        now = timezone.now()
+        qs = super().get_queryset().filter(
+            models.Q(
+                models.Q(end_datetime__isnull=False)
+                & models.Q(end_datetime__lte=now)
+            )
+        )
+        return qs
+
 class Church(models.Model):
     name = models.CharField(max_length=200)
     admins = models.ManyToManyField(User, related_name='church')
@@ -94,6 +129,16 @@ class Church(models.Model):
     logo = models.ImageField(storage=upload_storage, blank=True)
     address = models.CharField(max_length=500)
     zip_code = models.IntegerField()
+    foreground_image = models.ImageField(
+        storage=upload_storage,
+        blank=True,
+        null=True
+    )
+    background_image = models.ImageField(
+        storage=upload_storage,
+        blank=True,
+        null=True
+    )
     
     def __str__(self):
         return self.name
@@ -107,6 +152,8 @@ class Page(models.Model):
         return self.title
     
 class Item(models.Model):
+    objects = ScheduledManager()
+    
     church = models.ForeignKey(Church, related_name='news_items')
     title = models.CharField(max_length=200)
     image = models.ImageField(storage=upload_storage, blank=True)
@@ -114,18 +161,24 @@ class Item(models.Model):
     sort_order = models.IntegerField(default=0)
     form = models.ForeignKey('Form', blank=True, null=True)
     link_text = models.CharField(max_length=200, blank=True)
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
     
     def __str__(self):
         return self.title
     
     class Meta:
-        ordering = ['sort_order', '-pk']
+        ordering = ['sort_order', '-end_datetime']
     
 class Form(models.Model):
+    objects = ScheduledManager()
+    
     church = models.ForeignKey(Church, related_name='forms')
     name = models.CharField(max_length=200)
     recipient = models.CharField(max_length=500, help_text='a comma separated list of emails')
     sort_order = models.IntegerField(default=0)
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
     
     def __str__(self):
         return self.name
@@ -134,7 +187,7 @@ class Form(models.Model):
         return bulletin.forms.ContactForm(instance=self)
     
     class Meta:
-        ordering = ['sort_order', '-pk']
+        ordering = ['sort_order', '-end_datetime']
 
 class FormSubmission(models.Model):
     form = models.ForeignKey(Form, related_name='submissions')
@@ -167,11 +220,15 @@ class Choice(models.Model):
         return self.name
 
 class Passage(models.Model):
+    objects = ScheduledManager()
+    
     church = models.ForeignKey(Church, related_name='passages')
     book = models.CharField(max_length=200, choices=BOOK_CHOICES)
     chapter = models.IntegerField(blank=True, null=True)
     verse = models.CharField(max_length=200, blank=True)
     sort_order = models.IntegerField(default=0)
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
     
     def __str__(self):
         reference = self.book.title()
@@ -182,4 +239,4 @@ class Passage(models.Model):
         return reference
     
     class Meta:
-        ordering = ['sort_order', '-pk']
+        ordering = ['sort_order', '-end_datetime']

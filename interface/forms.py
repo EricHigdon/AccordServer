@@ -16,7 +16,17 @@ class NewsItemForm(forms.ModelForm):
     class Meta:
         model = Item
         exclude = ('church', 'sort_order',)
-        widgets = {'content': forms.TextInput(attrs={'class': 'html-editor'})}
+        widgets = {
+            'start_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'end_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'content': forms.TextInput(attrs={'class': 'html-editor'})
+        }
     
     def save(self, church):
         self.instance.church = church
@@ -31,7 +41,17 @@ class ImNewForm(forms.ModelForm):
 class ConnectForm(forms.ModelForm):
     class Meta:
         model = Form
-        fields = ('name', 'recipient',)
+        fields = ('name', 'recipient', 'start_datetime', 'end_datetime')
+        widgets = {
+            'start_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'end_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+        }
     
     def save(self, church, *args, **kwargs):
         self.instance.church = church
@@ -41,6 +61,16 @@ class PassageItemForm(forms.ModelForm):
     class Meta:
         model = Passage
         exclude = ('church', 'sort_order',)
+        widgets = {
+            'start_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'end_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+        }
     
     def save(self, church):
         self.instance.church = church
@@ -49,10 +79,19 @@ class PassageItemForm(forms.ModelForm):
 class MyChurchForm(forms.ModelForm):
     class Meta:
         model = Church
-        exclude = ('admins', 'modified', 'im_new')
+        exclude = ('admins', 'modified', 'im_new', 'foreground_image', 'background_image')
         widgets = {
             'address': forms.TextInput(attrs={'class': 'html-editor'}),
             'logo': ImageInput()
+        }     
+        
+class HomeForm(forms.ModelForm):
+    class Meta:
+        model = Church
+        fields = ('foreground_image', 'background_image')
+        widgets = {
+            'foreground_image': ImageInput(),
+            'background_image': ImageInput()
         }
         
 class MessageForm(forms.Form):

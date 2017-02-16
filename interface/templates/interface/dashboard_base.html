@@ -15,7 +15,8 @@
                     <img class="church-logo" src="{{ static_url }}{{ upload_path }}{{ church.logo }}" alt="{{ church.name }}"/>
                 {% endif %}
                 <ul class="nav nav-sidebar">
-                    <li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard <span class="sr-only">(current)</span></a></li>
+                    <li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a></li>
+                    <li class="home"><a href="{% url 'home' %}"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
                     <li class="im-new"><a href="{% url 'im_new' %}"><i class="fa fa-user" aria-hidden="true"></i> I&rsquo;m New</a></li>
                     <li class="news"><a href="{% url 'news' %}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a></li>
                     <li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>

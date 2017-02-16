@@ -7,4 +7,4 @@ if __name__ == "__main__":
     django.setup()
     from push_notifications.models import APNSDevice
     devices = APNSDevice.objects.all()
-    devices.send_message(sys.argv[1], sound='default')
+    response = devices.send_message(sys.argv[1], sound='default')

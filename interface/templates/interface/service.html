@@ -2,8 +2,9 @@
 {% load static %}
 {% block dashboard %}
     <h1 class="page-header">Service</h1>
+    <h2>Current Passages</h2>
     <div class="flexbox sortable">
-        {% for passage in church.passages.all %}
+        {% for passage in current_passages %}
             <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item passage" data-order="{{ forloop.counter0 }}" data-pk="{{ passage.pk }}">
                 <div class="background">
                     <div class="item-header">
@@ -23,6 +24,57 @@
            </div>
         </a>
     </div>
+    
+    {% if upcoming_passages %}
+        <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed">Upcoming Passages</h2>
+        <div id="upcoming" class="flexbox sortable collapse">
+            {% for passage in upcoming_passages %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item passage" data-order="{{ forloop.counter0 }}" data-pk="{{ passage.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?edit_pk={{ passage.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_passage' passage.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <i class="fa fa-book"></i>
+                        <h3>{{ passage }}</h3>
+                    </div>
+                </div>
+            {% endfor %}
+            <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+               <div class="background">
+                   <i class="fa fa-plus"></i>
+                   <p>Add A Passage</p>
+               </div>
+            </a>
+        </div>
+    {% endif %}
+    
+    {% if past_passages %}
+        <h2 data-toggle="collapse" data-target="#past" class="collapsed">Past Passages</h2>
+        <div id="past" class="flexbox sortable collapse">
+            {% for passage in past_passages %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item passage" data-order="{{ forloop.counter0 }}" data-pk="{{ passage.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?edit_pk={{ passage.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_passage' passage.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <i class="fa fa-book"></i>
+                        <h3>{{ passage }}</h3>
+                    </div>
+                </div>
+            {% endfor %}
+            <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+               <div class="background">
+                   <i class="fa fa-plus"></i>
+                   <p>Add A Passage</p>
+               </div>
+            </a>
+        </div>
+    {% endif %}
+    
     <div id="addPassage" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
