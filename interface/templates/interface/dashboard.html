@@ -6,7 +6,7 @@
             <div class="background">
                 <h4>Latest Form Submissions</h4>
                 {% for submission in form_submissions %}
-                    <a data-toggle="collapse" data-target="#field-collapse{{ forloop.counter0 }}" class="submission-title collapsed">{{ submission.form }}</a>
+                    <a data-toggle="collapse" data-target="#field-collapse{{ forloop.counter0 }}" class="submission-title collapsed arrow-collapse">{{ submission.form_name }}</a>
                     <div id="field-collapse{{ forloop.counter0 }}" class="collapse submission-content">
                         {{ submission.content|safe }}
                     </div>

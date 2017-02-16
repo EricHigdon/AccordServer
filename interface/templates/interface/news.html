@@ -28,9 +28,15 @@
            </div>
         </a>
     </div>
+<<<<<<< HEAD
     
     {% if upcoming_items %}
         <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed">Upcoming Announcements</h2>
+=======
+
+    {% if upcoming_items %}
+        <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed arrow-collapse">Upcoming Announcements</h2>
+>>>>>>> origin/master
         <div id="upcoming" class="flexbox sortable collapse">
             {% for news_item in upcoming_items %}
                 <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
@@ -49,6 +55,7 @@
                     </div>
                 </div>
             {% endfor %}
+<<<<<<< HEAD
             <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
                <div class="background">
                    <i class="fa fa-plus"></i>
@@ -60,6 +67,13 @@
     
     {% if past_items %}
         <h2 data-toggle="collapse" data-target="#past" class="collapsed">Past Announcements</h2>
+=======
+        </div>
+    {% endif %}
+
+    {% if past_items %}
+        <h2 data-toggle="collapse" data-target="#past" class="collapsed arrow-collapse">Past Announcements</h2>
+>>>>>>> origin/master
         <div id="past" class="flexbox sortable collapse">
             {% for news_item in past_items %}
                 <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
@@ -78,6 +92,7 @@
                     </div>
                 </div>
             {% endfor %}
+<<<<<<< HEAD
             <a href="?edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
                <div class="background">
                    <i class="fa fa-plus"></i>
@@ -87,6 +102,11 @@
         </div>
     {% endif %}
     
+=======
+        </div>
+    {% endif %}
+
+>>>>>>> origin/master
     <div id="addItem" class="modal fade" role="dialog">
         <div class="modal-dialog">
 

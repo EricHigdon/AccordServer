@@ -139,6 +139,10 @@ class Church(models.Model):
         blank=True,
         null=True
     )
+<<<<<<< HEAD
+=======
+    podcast_url = models.URLField(blank=True)
+>>>>>>> origin/master
     
     def __str__(self):
         return self.name
@@ -190,11 +194,12 @@ class Form(models.Model):
         ordering = ['sort_order', '-end_datetime']
 
 class FormSubmission(models.Model):
-    form = models.ForeignKey(Form, related_name='submissions')
+    church = models.ForeignKey(Church, related_name='form_submissions')
+    form_name = models.CharField(max_length=200)
     content = models.CharField(max_length=5000)
     
     def __str__(self):
-        return self.form.name
+        return self.form_name
     
     class Meta:
         ordering = ['-id']

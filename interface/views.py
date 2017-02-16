@@ -28,7 +28,7 @@ def dashboard(request):
         church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
-    form_submissions = FormSubmission.objects.filter(form__church=church)[:5]
+    form_submissions = church.form_submissions.all()[:5]
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
