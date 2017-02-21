@@ -139,10 +139,7 @@ class Church(models.Model):
         blank=True,
         null=True
     )
-<<<<<<< HEAD
-=======
     podcast_url = models.URLField(blank=True)
->>>>>>> origin/master
     
     def __str__(self):
         return self.name

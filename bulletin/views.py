@@ -1,19 +1,13 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-<<<<<<< HEAD
-from django.http import JsonResponse, HttpResponse
-=======
 from django.http import JsonResponse
->>>>>>> origin/master
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.template.loader import render_to_string
-from django.utils import timezone
 from .models import *
 from .forms import *
 from .decorators import http_basic_auth
 import feedparser
-<<<<<<< HEAD
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from .serializers import UserSerializer
@@ -21,8 +15,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from push_notifications.models import APNSDevice, GCMDevice
-=======
->>>>>>> origin/master
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):   
@@ -122,15 +114,11 @@ def api(request, church_pk):
     forms = Form.objects.current().filter(church_id=church.pk)
     items = Item.objects.current().filter(church_id=church.pk)
     passages = Passage.objects.current().filter(church_id=church.pk)
-<<<<<<< HEAD
-    feed = feedparser.parse('https://fwbcpodcast.wordpress.com/feed/')['entries']
-=======
     if church.podcast_url:
         feed = feedparser.parse(church.podcast_url)['entries'][:10]
     else:
         feed = None
-            
->>>>>>> origin/master
+
     for page in page_objects:
         if page != page_objects[0]:
             extra_classes = 'cached'
@@ -143,11 +131,7 @@ def api(request, church_pk):
             'extra_classes': extra_classes,
             'is_admin': is_admin,
             'forms': forms,
-<<<<<<< HEAD
-            'feed': feed[:10],
-=======
             'feed': feed,
->>>>>>> origin/master
             'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})
@@ -177,7 +161,7 @@ def contact(request):
                 }
                 msg_plain = render_to_string('bulletin/contact-email.txt', email_context)
                 msg_html = render_to_string('bulletin/contact-email.html', email_context)
-                submission = FormSubmission(form_name=form.name, content=msg_html)
+                submission = FormSubmission(form_name=form.name, content=msg_html, church=form.church)
                 submission.save()
                 email = EmailMultiAlternatives(
                     form.name,
