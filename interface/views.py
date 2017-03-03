@@ -408,3 +408,19 @@ def home(request):
         'active': 'home'
     }
     return render(request, template, context)
+
+def privacy_policy(request):
+    template = 'interface/privacy-policy.html'
+    context = {}
+    return render(request, template, context)
+
+def support(request):
+    template = 'interface/support.html'
+    if request.method == 'POST':
+        form = SupportForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = SupportForm()
+    context = {'form': form}
+    return render(request, template, context)

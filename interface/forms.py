@@ -1,5 +1,7 @@
 from django import forms
 from django.conf import settings
+from django.core.mail import send_mail
+
 from bulletin.models import *
 from display.models import *
 from push_notifications.models import *
@@ -142,3 +144,11 @@ class SlideForm(forms.ModelForm):
     def save(self, church):
         self.instance.church = church
         super(SlideForm, self).save()
+
+class SupportForm(forms.Form):
+    name = forms.CharField()
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea())
+
+    def save(self):
+        send_mail('support request', self.cleaned_data['message'], 'eric.s.higdon@gmail.com', [self.cleaned_data['email']], fail_silently=False)

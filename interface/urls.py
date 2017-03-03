@@ -4,6 +4,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^privacy-policy/$', views.privacy_policy, name='privacy_policy'),
+    url(r'^support/$', views.support, name='support'),
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
     url(r'^news/$', views.news, name='news'),
     url(r'^news/delete/(?P<item_pk>[0-9]+)/$', views.delete_item, name='delete_item'),
