@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'push_notifications',
     'register',
     'phonenumber_field',
-    'localflavor'
+    'localflavor',
     'corsheaders',
 ]
 
