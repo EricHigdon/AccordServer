@@ -4,13 +4,50 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import Template, RequestContext
 from django.template.loader import render_to_string
-from django.utils import timezone
 from .models import *
 from .forms import *
 from .decorators import http_basic_auth
 import feedparser
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets
+from .serializers import UserSerializer
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from push_notifications.models import APNSDevice, GCMDevice
 
 # Create your views here.
+class UserViewSet(viewsets.ModelViewSet):   
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+    
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(UserViewSet, self).get_queryset(*args, **kwargs)
+        if self.request.user.is_authenticated():
+            queryset = queryset.filter(pk=self.request.user.pk)
+        return queryset
+
+    def get_object(self):
+        return self.request.user
+    
+@receiver(post_save, sender=get_user_model())
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+        device = None
+        try:
+            device = APNSDevice.objects.get(device_id=instance.username)
+        except APNSDevice.DoesNotExist:
+            pass
+        try:
+            device = GCMDevice.objects.get(device_id=instance.username)
+        except (GCMDevice.DoesNotExist, ValueError):
+            pass
+        if device is not None:
+            device.user = instance
+            device.save()
+
+    
 def modified(request, church_pk):
     church = get_object_or_404(Church, pk=church_pk)
     modified = church.modified
@@ -81,7 +118,7 @@ def api(request, church_pk):
         feed = feedparser.parse(church.podcast_url)['entries'][:10]
     else:
         feed = None
-            
+
     for page in page_objects:
         if page != page_objects[0]:
             extra_classes = 'cached'
@@ -124,7 +161,7 @@ def contact(request):
                 }
                 msg_plain = render_to_string('bulletin/contact-email.txt', email_context)
                 msg_html = render_to_string('bulletin/contact-email.html', email_context)
-                submission = FormSubmission(form_name=form.name, content=msg_html)
+                submission = FormSubmission(form_name=form.name, content=msg_html, church=form.church)
                 submission.save()
                 email = EmailMultiAlternatives(
                     form.name,

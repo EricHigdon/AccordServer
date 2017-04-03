@@ -1,0 +1,12 @@
+{% extends 'interface/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <h1>Support</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" />
+        </form>
+    </div>
+{% endblock %}
