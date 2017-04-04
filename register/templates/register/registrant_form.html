@@ -37,7 +37,7 @@
 					{% for field in form.visible_fields %}
 					<div class="form-group{% if field.errors %} has-error{% endif %}">
 						<label for="id_{{ field.name }}" class="col-lg-2 control-label">{{ field.label }} {% if not field.field.required %} (optional){% endif %}</label>
-							<span class="has-error">{{ field.errors }}</span>
+							{{ field.errors }}
 							<div class="col-lg-10">
 								{% render_field field 'form-control' %}
 								<span class="help-block">{{ field.help_text }}</span>

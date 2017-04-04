@@ -9,7 +9,7 @@ class RegistrantForm(forms.ModelForm):
 
     class Meta:
         model = Registrant
-        fields = ['first_name', 'last_name', 'email', 'phone',]
+        fields = ['event', 'church', 'first_name', 'last_name', 'email', 'phone',]
         widgets = {
             'church': forms.HiddenInput(),
             'event': forms.HiddenInput(),
