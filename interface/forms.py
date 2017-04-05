@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 
 from bulletin.models import *
 from display.models import *
+from register.models import *
 from push_notifications.models import *
 
 class ImageInput(forms.ClearableFileInput):
@@ -144,6 +145,19 @@ class SlideForm(forms.ModelForm):
     def save(self, church):
         self.instance.church = church
         super(SlideForm, self).save()
+
+class RegistrantForm(forms.ModelForm):
+    class Meta:
+        model = Registrant
+        exclude = ('church', 'children',)
+        widgets = {
+            'event': forms.HiddenInput(),
+            'phone': forms.TextInput(attrs={'type': 'tel'})
+        }
+    
+    def save(self, church):
+        self.instance.church = church
+        super().save()
 
 class SupportForm(forms.Form):
     name = forms.CharField()

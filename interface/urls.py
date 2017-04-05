@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^home/$', views.home, name='home'),
     url(r'^display/$', views.display, name='display'),
     url(r'^display/delete/(?P<item_pk>[0-9]+)/$', views.delete_slide, name='delete_slide'),
+    url(r'^registration-data/$', views.view_registration_data, name='registration_data'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 ]

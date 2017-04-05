@@ -7,6 +7,7 @@ from django.forms import inlineformset_factory
 from bulletin.decorators import http_basic_auth
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
 import json
@@ -406,6 +407,36 @@ def home(request):
         'form': form,
         'church': church,
         'active': 'home'
+    }
+    return render(request, template, context)
+
+@login_required
+def view_registration_data(request):
+    template = 'interface/registration-data.html'
+    church = request.user.church.prefetch_related('registrants').first()
+    events = church.registrants.order_by('event').distinct().values_list('event', flat=True)
+    event = request.GET.get('event', '')
+    registrants = church.registrants.filter(event=event).order_by('-pk')
+    edit_pk = request.GET.get('edit_pk', None)
+    if edit_pk is not None:
+        try:
+            edit_registrant = Registrant.objects.get(pk=edit_pk)
+        except Registrant.DoesNotExist:
+            edit_registrant = None
+    else:
+        edit_registrant = None
+    if request.method == 'POST':
+        form = RegistrantForm(request.POST, instance=edit_registrant)
+        if form.is_valid():
+            form.save(church)
+            form = RegistrantForm()
+            if edit_pk is not None:
+                return redirect(reverse('registration_data')+'?event='+event)
+    else:
+        form = RegistrantForm(instance=edit_registrant)
+    context = {
+        'church': church, 'events': events, 'registrants': registrants,
+        'form': form
     }
     return render(request, template, context)
 

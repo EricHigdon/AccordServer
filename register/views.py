@@ -1,7 +1,14 @@
 from django.views.generic.edit import FormView
+from .models import Registrant
 from .forms import RegistrantForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from rest_framework import viewsets
+from .serializers import RegistrantSerializer
+from django.shortcuts import get_object_or_404
+from bulletin.models import Church
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -28,3 +35,19 @@ class Register(FormView):
 
     def get_success_url(self):
         return self.request.build_absolute_uri()
+
+class RegistrantViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows slides to be viewed.
+    """
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+    queryset = Registrant.objects.order_by('-pk')
+    serializer_class = RegistrantSerializer
+
+    def get_queryset(self):
+        church = get_object_or_404(Church, admins=self.request.user)
+        event = self.request.GET.get('event', '')
+        return church.registrants.filter(
+            event=event
+        ).order_by('-pk')
