@@ -18,6 +18,7 @@ class Registrant(models.Model):
     email = models.EmailField(max_length=200, blank=True)
     phone = models.IntegerField(
         blank=True,
+        null=True,
         help_text="""
             Your phone number will not be shared in any way.
             If you choose to enter your phone number,
