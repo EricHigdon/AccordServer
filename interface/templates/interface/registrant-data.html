@@ -2,7 +2,10 @@
 {% load static %}
 {% block content %}
     <div class="container">
-		<h1 class="page-header">Registrant Data</h1>
+		<h1 class="page-header">
+			Registrant Data
+			<a href="{% url 'register' %}" target="_blank" style="font-size: 11pt; float: right; margin-top: 10px;"><i class="fa fa-external-link"></i> Registration Form</a>
+		</h1>
 		{% if events %}
 			<form id="eventForm" method="GET">
 				<select id="event" name="event" class="form-control">
