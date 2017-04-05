@@ -10,7 +10,7 @@ class Register(FormView):
     authentication_required = True
     template_name = 'register/registrant_form.html'
     form_class = RegistrantForm
-    success_url = '/register/?event=Eggciting'
+    success_url = '/register/'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -25,3 +25,6 @@ class Register(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.request.build_absolute_uri()
