@@ -411,8 +411,8 @@ def home(request):
     return render(request, template, context)
 
 @login_required
-def view_registration_data(request):
-    template = 'interface/registration-data.html'
+def view_registrant_data(request):
+    template = 'interface/registrant-data.html'
     church = request.user.church.prefetch_related('registrants').first()
     events = church.registrants.order_by('event').distinct().values_list('event', flat=True)
     event = request.GET.get('event', '')
@@ -436,7 +436,7 @@ def view_registration_data(request):
         form = RegistrantForm(instance=edit_registrant)
     context = {
         'church': church, 'events': events, 'registrants': registrants,
-        'form': form
+        'form': form, 'active': 'registrant-data'
     }
     return render(request, template, context)
 
