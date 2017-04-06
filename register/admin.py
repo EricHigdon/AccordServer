@@ -3,5 +3,5 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(Children)
+admin.site.register(Child)
 admin.site.register(Registrant)

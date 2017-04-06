@@ -426,17 +426,22 @@ def view_registrant_data(request):
     else:
         edit_registrant = None
     if request.method == 'POST':
+        print(request.POST)
         form = RegistrantForm(request.POST, instance=edit_registrant)
-        if form.is_valid():
+        children_form = ChildrenFormSet(request.POST, instance=edit_registrant)
+        if form.is_valid() and children_form.is_valid():
             form.save(church)
+            children_form.save()
             form = RegistrantForm()
             if edit_pk is not None:
-                return redirect(reverse('registration_data')+'?event='+event)
+                return redirect(reverse('registrant_data')+'?event='+event)
     else:
         form = RegistrantForm(instance=edit_registrant)
+        children_form = ChildrenFormSet(instance=edit_registrant)
     context = {
         'church': church, 'events': events, 'registrants': registrants,
-        'form': form, 'active': 'registrant-data'
+        'form': form, 'active': 'registrant-data',
+        'children_form': children_form
     }
     return render(request, template, context)
 

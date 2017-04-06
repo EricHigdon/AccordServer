@@ -5,11 +5,6 @@ from localflavor.us import models as localmodels
 
 # Create your models here.
 
-class Children(models.Model):
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
-    age = models.CharField(max_length=200)
-
 class Registrant(models.Model):
     church = models.ForeignKey(Church, related_name='registrants')
     event = models.CharField(max_length=200)
@@ -30,7 +25,11 @@ class Registrant(models.Model):
     city = models.CharField(max_length=200, blank=True)
     state = localmodels.USStateField(choices=US_STATES, blank=True)
     zip_code = localmodels.USZipCodeField(blank=True)
-    children = models.ManyToManyField(Children, blank=True)
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
+
+class Child(models.Model):
+    name = models.CharField(max_length=400)
+    age = models.CharField(max_length=200)
+    parent = models.ForeignKey(Registrant, related_name='children')

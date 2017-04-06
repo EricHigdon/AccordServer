@@ -12,6 +12,7 @@
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="{% static 'js/jquery.formset.js' %}"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/simplex/bootstrap.min.css" />
@@ -19,11 +20,16 @@
     	body {font-size: 175%;}
     	.form-control { height: 55px;}
     	.btn {font-size: 110%;}
+		.btn-primary, .btn-primary:hover {background: #1852A4; border:none;}
+		a.delete-row {float: right; margin-top: 45px;}
+		.ageField {margin-left: 3px !important;}
+		a.add-row {clear: both; display: block; margin-bottom: 25px;}
+		a.delete-row:before {content: "\f1f8"; font-family: FontAwesome; margin-right: 6px;}
     </style>
 </head>
 <body>
 	<div class="container" style="margin-top:10px;">
-		{% if form.initial.event %}
+		{% if request.GET.event %}
 			{% if form.errors %}
 				<div class="alert alert-dismissible alert-danger">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -44,31 +50,81 @@
 							{{ field }}
 						{% endfor %}
 						{% for field in form.visible_fields %}
-						<div class="form-group{% if field.errors %} has-error{% endif %}">
-							<label for="id_{{ field.name }}" class="col-lg-2 control-label">{{ field.label }} {% if not field.field.required %} (optional){% endif %}</label>
+							{% if not field.field.is_address or request.GET.address %}
 								{{ field.errors }}
-								<div class="col-lg-10">
-									{% render_field field 'form-control' %}
-									<span class="help-block">{{ field.help_text }}</span>
+								<div class="form-group{% if field.errors %} has-error{% endif %}">
+									<label for="id_{{ field.name }}" class="col-lg-2 control-label">{{ field.label }} {% if not field.field.required %} (optional){% endif %}</label>
+									<div class="col-lg-10">
+										{% render_field field 'form-control' %}
+										<span class="help-block">{{ field.help_text }}</span>
+									</div>
 								</div>
-							</div>
+							{% endif %}
 						{% endfor %}
-						<div class="form-group">
-							<div class="col-lg-10 col-lg-offset-2">
-								<button type="submit" class="btn btn-primary" style="width:100%;">Submit</button>
-							</div>
-						</div>
 					</fieldset>
+					{% if children_form is not None %}
+						<fieldset>
+							<legend><h3>Children</h3></legend>
+							{{ children_form.management_form }}
+							{{ children_form.non_form_errors }}
+							{% for form in children_form %}
+								<div class="inline">
+									<div class="form-group{% if field.errors %} has-error{% endif %} col-sm-7 col-xs-7">
+										{{ form.name.label_tag }}
+										{{ form.name.errors }}
+										<div class="">
+											{% render_field form.name 'form-control' %}
+											<span class="help-block">{{ form.name.help_text }}</span>
+										</div>
+									</div>
+									<div class="form-group{% if field.errors %} has-error{% endif %} col-sm-4 col-xs-4 ageField">
+										{{ form.age.label_tag }}
+										{{ form.age.errors }}
+										{% render_field form.age 'form-control' %}
+										<span class="help-block">{{ form.age.help_text }}</span>
+									</div>
+								</div>
+							{% endfor %}
+						</fieldset>
+					{% endif %}
+					<div class="form-group">
+						<div class="col-lg-12">
+							<button type="submit" class="btn btn-primary" style="width:100%;">Submit</button>
+						</div>
+					</div>
 				</form>
 			</div>
+			<script type="text/javascript">
+				$('.alert-success').delay(1500).slideUp();
+				$('.inline').formset({
+					prefix: "{{ children_form.prefix }}",
+					addCssClass: "add-row btn btn-success",
+				});
+			</script>
 		{% else %}
 			<div class="well">
 				<form class="form-horizontal" _lpchecked="1" method="GET">
 					<fieldset>
-						<legend><h1>Set Event Name</h1></legend>
+						<legend><h1>Setup Registration</h1></legend>
 						<div class="form-group">
 							<div class="col-lg-12">
-								<input type="text" placeholder="Event Name" name="event" class="form-control" />
+								<input type="text" placeholder="Event Name" name="event" class="form-control" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-12">
+								<label>
+									<input type="Checkbox" name="address" value="True" />
+									Collect adresses
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-12">
+								<label>
+									<input type="Checkbox" name="children" value="True" />
+									Collect children names and ages
+								</label>
 							</div>
 						</div>
 						<div class="form-group">
@@ -81,8 +137,5 @@
 			</div>
 		{% endif %}
 	</div>
-	<script type="text/javascript">
-		$('.alert-success').delay(1500).slideUp();
-	</script>
 </body>
 </html>

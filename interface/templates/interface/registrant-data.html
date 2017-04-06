@@ -1,5 +1,10 @@
 {% extends 'interface/base.html' %}
 {% load static %}
+
+{% block extra_script %}
+	<script type="text/javascript" src="{% static '/js/jquery.formset.js' %}"></script>
+{% endblock %}
+
 {% block content %}
     <div class="container">
 		<h1 class="page-header">
@@ -30,6 +35,7 @@
 						<th>Name</th>
 						<th>Email</th>
 						<th>Phone</th>
+						<th style="text-align:center;">Children</th>
 						<th style="text-align:center;">Edit</th>
 					</tr>
 				</thead>
@@ -39,6 +45,7 @@
 						<td>{{ person }}</td>
 						<td>{{ person.email }}</td>
 						<td>{{ person.phone }}</td>
+						<td align="center">{{ person.children.count }}</td>
 						<td align="center">
 							<a href="{{ request.build_absolute_uri }}&edit_pk={{ person.pk }}">
 								<i class="fa fa-edit" style="font-size: 14pt;"></i>
@@ -65,6 +72,7 @@
 								html_string += '<td>'+ this.first_name + ' ' + this.last_name +'</td>';
 								html_string += '<td>'+ this.email +'</td>';
 								html_string += '<td>'+ this.phone +'</td>';
+								html_string += '<td align="center">'+ this.children +'</td>';
 								html_string += '<td align="center"><a href="{{ request.build_absolute_uri }}?edit_pk='+ this.id +'"><i class="fa fa-edit" style="font-size: 14pt;"></i></a></td>';
 								html_string += '</tr>';
 								$('tbody').prepend(html_string);
@@ -91,16 +99,43 @@
                 <div class="modal-body">
                     {% csrf_token %}
                     {{ form.as_p }}
+					<legend style="margin-top:25px;">Children</legend>
+					{{ children_form.management_form }}
+					{{ children_form.non_form_errors }}
+					{% for form in children_form %}
+						<div class="row inline" style="margin-bottom: 5px;">
+							<div class="col-sm-7">
+								{{ form.name.label_tag }}
+								{{ form.name.errors }}
+								{{ form.name }}
+							</div>
+							<div class="col-sm-4">
+								{{ form.age.label_tag }}
+								{{ form.age.errors }}
+								{{ form.age }}
+							</div>
+							{% if form.instance.pk %}
+								{{ form.id }}
+								{{ form.DELETE }}
+							{% endif %}
+						</div>
+					{% endfor %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" value="Save"/>
                 </div>
             </form>
-    
+			<script type="text/javascript">
+				$('.inline').formset({
+					prefix: "{{ children_form.prefix }}",
+					deleteText: '<i class="fa fa-trash"></i>',
+					addText: '<i class="fa fa-plus"></i> Add another'
+				});
+			</script>
         </div>
     </div>
-    {% if form.errors or request.GET.edit_pk %}
+    {% if form.errors or children_form.errors or request.GET.edit_pk %}
         <script type="text/javascript">
             $(document).ready(function(){
                 $('#addItem').modal('show');
