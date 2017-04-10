@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from bulletin.models import *
 from display.models import *
 from .forms import *
+from register.resources import RegistrantResource
 from django.forms import inlineformset_factory
 from bulletin.decorators import http_basic_auth
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -414,7 +415,9 @@ def home(request):
 def view_registrant_data(request):
     template = 'interface/registrant-data.html'
     church = request.user.church.prefetch_related('registrants').first()
-    events = church.registrants.order_by('event').distinct().values_list('event', flat=True)
+    events = church.registrants.order_by('event').distinct().values_list(
+        'event', flat=True
+    )
     event = request.GET.get('event', '')
     registrants = church.registrants.filter(event=event).order_by('-pk')
     edit_pk = request.GET.get('edit_pk', None)
@@ -426,7 +429,6 @@ def view_registrant_data(request):
     else:
         edit_registrant = None
     if request.method == 'POST':
-        print(request.POST)
         form = RegistrantForm(request.POST, instance=edit_registrant)
         children_form = ChildrenFormSet(request.POST, instance=edit_registrant)
         if form.is_valid() and children_form.is_valid():
@@ -445,6 +447,20 @@ def view_registrant_data(request):
     }
     return render(request, template, context)
 
+####################
+##  Export Views  ##
+####################
+@login_required
+def export_registrants(request, event):
+    church = request.user.church.only('pk').first().pk
+    dataset = RegistrantResource(church, event).export()
+    response = HttpResponse(content=dataset.csv, content_type='text/csv')
+    response['Content-disposition'] = 'attachment; filename={} registrants.csv'.format(event)
+    return response
+
+####################
+##  Static Views  ##
+####################
 def privacy_policy(request):
     template = 'interface/privacy-policy.html'
     context = {}

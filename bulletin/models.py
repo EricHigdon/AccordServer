@@ -143,9 +143,6 @@ class Church(models.Model):
     
     def __str__(self):
         return self.name
-
-    class Meta:
-        verbose_name_plural = 'Churches'
     
 class Page(models.Model):
     title = models.CharField(max_length=200)

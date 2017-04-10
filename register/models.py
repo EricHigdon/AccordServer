@@ -11,7 +11,8 @@ class Registrant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200, blank=True)
-    phone = models.IntegerField(
+    phone = models.CharField(
+    	max_length=200,
         blank=True,
         null=True,
         help_text="""
@@ -33,3 +34,6 @@ class Child(models.Model):
     name = models.CharField(max_length=400)
     age = models.CharField(max_length=200)
     parent = models.ForeignKey(Registrant, related_name='children')
+
+    def __str__(self):
+        return '{} ({})'.format(self.name, self.age)

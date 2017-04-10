@@ -30,9 +30,3 @@ urlpatterns = [
     url(r'^display/', include('display.urls')),
     url(r'^admin/', admin.site.urls),
 ]
-
-try:
-    from . import local_urls
-    urlpatterns += local_urls.urlpatterns
-except ImportError:
-    pass

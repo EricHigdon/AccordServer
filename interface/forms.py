@@ -162,7 +162,7 @@ class RegistrantForm(forms.ModelForm):
         super().save()
 
 ChildrenFormSet = inlineformset_factory(
-    Registrant, Child, fields='__all__', extra=0
+    Registrant, Child, fields='__all__', extra=1
 )
 
 class SupportForm(forms.Form):

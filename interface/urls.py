@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^display/$', views.display, name='display'),
     url(r'^display/delete/(?P<item_pk>[0-9]+)/$', views.delete_slide, name='delete_slide'),
     url(r'^registrant-data/$', views.view_registrant_data, name='registrant_data'),
+    url(r'^registrant-data/export/(?P<event>.*)/$', views.export_registrants, name='export_registrants'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 ]
