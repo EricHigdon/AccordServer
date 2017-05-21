@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from bulletin.models import *
 from display.models import *
 from .forms import *
+from register.resources import RegistrantResource
 from django.forms import inlineformset_factory
 from bulletin.decorators import http_basic_auth
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
 import json
@@ -409,6 +411,56 @@ def home(request):
     }
     return render(request, template, context)
 
+@login_required
+def view_registrant_data(request):
+    template = 'interface/registrant-data.html'
+    church = request.user.church.prefetch_related('registrants').first()
+    events = church.registrants.order_by('event').distinct().values_list(
+        'event', flat=True
+    )
+    event = request.GET.get('event', '')
+    registrants = church.registrants.filter(event=event).order_by('-pk')
+    edit_pk = request.GET.get('edit_pk', None)
+    if edit_pk is not None:
+        try:
+            edit_registrant = Registrant.objects.get(pk=edit_pk)
+        except Registrant.DoesNotExist:
+            edit_registrant = None
+    else:
+        edit_registrant = None
+    if request.method == 'POST':
+        form = RegistrantForm(request.POST, instance=edit_registrant)
+        children_form = ChildrenFormSet(request.POST, instance=edit_registrant)
+        if form.is_valid() and children_form.is_valid():
+            form.save(church)
+            children_form.save()
+            form = RegistrantForm()
+            if edit_pk is not None:
+                return redirect(reverse('registrant_data')+'?event='+event)
+    else:
+        form = RegistrantForm(instance=edit_registrant)
+        children_form = ChildrenFormSet(instance=edit_registrant)
+    context = {
+        'church': church, 'events': events, 'registrants': registrants,
+        'form': form, 'active': 'registrant-data',
+        'children_form': children_form
+    }
+    return render(request, template, context)
+
+####################
+##  Export Views  ##
+####################
+@login_required
+def export_registrants(request, event):
+    church = request.user.church.only('pk').first().pk
+    dataset = RegistrantResource(church, event).export()
+    response = HttpResponse(content=dataset.csv, content_type='text/csv')
+    response['Content-disposition'] = 'attachment; filename={} registrants.csv'.format(event)
+    return response
+
+####################
+##  Static Views  ##
+####################
 def privacy_policy(request):
     template = 'interface/privacy-policy.html'
     context = {}

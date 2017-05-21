@@ -1,10 +1,38 @@
 {% extends 'interface/dashboard_base.html' %}
 {% load static %}
 {% block dashboard %}
+<style>
+.iphonePreview {
+	background: url(https://cdn.erichigdon.com/accordapp/img/iphone.svg);
+	width: 275px;
+	height: 560px;
+	background-repeat: no-repeat;
+	background-size: cover;
+	margin: auto;
+	padding: 66px 17px;
+}
+.previewText {
+	width: 275px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
     <h1 class="page-header">Home</h1>
-    <form method="POST" class="homeForm" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" class="btn btn-primary pull-right" value="Save"/>
-    </form>
+	<div class="col-xs-12 col-md-6" style="margin-bottom: 25px;">
+    	<form method="POST" class="homeForm" enctype="multipart/form-data">
+    	    {% csrf_token %}
+    	    {{ form.as_p }}
+    	    <input type="submit" class="btn btn-primary pull-right" value="Save"/>
+    	</form>
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<p class="previewText">Preview:</p>
+		<div class="iphonePreview">
+			<div class="background" style="background-image:url({% static 'img/uploads/' %}{{ church.background_image }}); background-size: cover; background-position:center center; height: 100%; margin:0px; position: relative;">
+				<div class="foreground" style="background-image:url({% static 'img/uploads/' %}{{ church.foreground_image }}); background-size: contain; background-position:center center; background-repeat: no-repeat; position: absolute; left:0; right:0; top:0; bottom:0; height:100%;">
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

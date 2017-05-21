@@ -20,7 +20,8 @@
             {% if user.is_authenticated %}
                 <li class="dashboard"><a href="{% url 'dashboard' %}">App</a></li>
                 <li class="display"><a href="{% url 'display' %}">Display</a></li>
-                <li class="my-church"><a href="{% url 'my_church' %}">My Church</a></li>
+                <li class="registrant-data"><a href="{% url 'registrant_data' %}">Register</a></li>
+                <li class="my-church"><a href="{% url 'my_church' %}">My Account</a></li>
                 <li><a href="{% url 'logout' %}">Sign Out</a></li>
             {% else %}
                 <li><a href="{% url 'dashboard' %}">Sign In</a></li>

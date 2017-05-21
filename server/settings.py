@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'display',
     'interface',
     'push_notifications',
+    'register',
+    'phonenumber_field',
+    'localflavor',
     'corsheaders',
 ]
 
