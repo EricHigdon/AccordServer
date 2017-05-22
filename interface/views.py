@@ -329,7 +329,9 @@ def campaigns(request):
     except Church.DoesNotExist:
         return redirect('create_church')
     campaign_pk = request.GET.get('campaign_pk', None)
+    edit_campaign_pk = request.GET.get('edit_campaign_pk', None)
     if campaign_pk is not None:
+        campaign_pk = int(campaign_pk)
         try:
             campaign = Campaign.objects.get(pk=campaign_pk)
         except Campaign.DoesNotExist:
@@ -340,7 +342,7 @@ def campaigns(request):
     if campaign is not None:
         if edit_pk is not None:
             try:
-                campaignentry = CampaignEntry.objects.get(pk=edit_pk)
+                campaignentry = CampaignEntry.objects.get(pk=edit_pk, campaign__church_id=church.pk)
             except CampaignEntry.DoesNotExist:
                 campaignentry = None
         else:
@@ -351,7 +353,7 @@ def campaigns(request):
                 form.save(campaign)
                 form = CampaignEntryForm()
                 if edit_pk is not None:
-                    return redirect('campaigns')
+                    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(campaignentry.campaign_id))
                 church.modified = timezone.now()
                 church.save()
         else:
@@ -360,7 +362,24 @@ def campaigns(request):
         upcoming_entries = CampaignEntry.objects.upcoming().filter(campaign_id=campaign.pk)
         past_entries = CampaignEntry.objects.past().filter(campaign_id=campaign.pk)
     else:
-        form = None
+        if edit_campaign_pk is not None:
+            try:
+                edit_campaign = church.campaigns.get(pk=edit_campaign_pk)
+            except Campaign.DoesNotExist:
+                edit_campaign = None
+        else:
+            edit_campaign = None
+        if request.method == 'POST':
+            form = CampaignForm(request.POST, instance=edit_campaign)
+            if form.is_valid():
+                form.save(church)
+                form = CampaignForm()
+                if edit_campaign_pk is not None:
+                    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(edit_campaign.pk))
+                church.modified = timezone.now()
+                church.save()
+        else:
+            form = CampaignForm(instance=edit_campaign)
         current_entries = []
         upcoming_entries = []
         past_entries = []
@@ -369,6 +388,7 @@ def campaigns(request):
         'upload_path': settings.UPLOAD_PATH,
         'edit_pk': edit_pk,
         'campaign_pk': campaign_pk,
+        'edit_campaign_pk': edit_campaign_pk,
         'church': church,
         'form': form,
         'campaign': campaign,

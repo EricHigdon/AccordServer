@@ -13,10 +13,10 @@ PUSH_NOTIFICATIONS_SETTINGS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'accordapp',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
+        'NAME': 'ehigdon_beta_accord',
+        'USER': 'ehigdon_accord',
+        'PASSWORD': 't)6hq6evC.@fyq@^xh',
+        'HOST': '198.38.82.92',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",

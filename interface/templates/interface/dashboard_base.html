@@ -21,8 +21,9 @@
                     <li class="news"><a href="{% url 'news' %}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a></li>
                     <li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>
  Connect</a></li>
- 					<li class='my-church'><a href="#" data-toggle="collapse" data-target="#myChurch" class="collapsed"><i class="my-church-icon"></i>My Church</a><ul id="myChurch" class="collapse nav">
+					<li class='my-church'><a href="#" data-toggle="collapse" data-target="#myChurch"{% if active != 'service' and active != 'campaigns' %} class="collapsed"{% endif %}><i class="my-church-icon"></i>My Church</a><ul id="myChurch" class="collapse nav">
                     	<li class="service"><a href="{% url 'service' %}"><i class="fa fa-book" aria-hidden="true"></i> Service</a></li>
+                    	<li class="campaigns"><a href="{% url 'campaigns' %}"><i class="fa fa-flag" aria-hidden="true"></i> Campaigns</a></li>
 					</ul></li>
                     <li class="send-message"><a href="{% url 'send_message' %}"><i class="fa fa-comment" aria-hidden="true"></i> Notifications</a></li>
                 </ul>

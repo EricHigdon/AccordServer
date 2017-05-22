@@ -34,7 +34,7 @@ class NewsItemForm(forms.ModelForm):
     
     def save(self, church):
         self.instance.church = church
-        super(NewsItemForm, self).save()
+        super().save()
 
 class ImNewForm(forms.ModelForm):
     class Meta:
@@ -59,7 +59,7 @@ class ConnectForm(forms.ModelForm):
     
     def save(self, church, *args, **kwargs):
         self.instance.church = church
-        return super(ConnectForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
     
 class PassageItemForm(forms.ModelForm):
     class Meta:
@@ -78,7 +78,7 @@ class PassageItemForm(forms.ModelForm):
     
     def save(self, church):
         self.instance.church = church
-        super(PassageItemForm, self).save()
+        super().save()
         
 class MyChurchForm(forms.ModelForm):
     class Meta:
@@ -89,10 +89,31 @@ class MyChurchForm(forms.ModelForm):
             'logo': ImageInput()
         }
 
+class CampaignForm(forms.ModelForm):
+    class Meta:
+        model = Campaign
+        exclude = ('church',)
+        widgets = {
+            'start_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'end_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'content': forms.TextInput(attrs={'class': 'html-editor'})
+        }
+    
+    def save(self, church):
+        self.instance.church = church
+        super().save()
+
+
 class CampaignEntryForm(forms.ModelForm):
     class Meta:
         model = CampaignEntry
-        exclude = ('sort_order',)
+        exclude = ('campaign', 'sort_order',)
         widgets = {
             'start_datetime': forms.TextInput(attrs={
                 'class': 'date',
@@ -165,7 +186,7 @@ class SlideForm(forms.ModelForm):
     
     def save(self, church):
         self.instance.church = church
-        super(SlideForm, self).save()
+        super().save()
 
 class RegistrantForm(forms.ModelForm):
     class Meta:
