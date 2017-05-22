@@ -107,7 +107,7 @@ class CampaignForm(forms.ModelForm):
     
     def save(self, church):
         self.instance.church = church
-        super().save()
+        return super().save()
 
 
 class CampaignEntryForm(forms.ModelForm):
@@ -128,7 +128,7 @@ class CampaignEntryForm(forms.ModelForm):
 
     def save(self, campaign):
         self.instance.campaign = campaign
-        super().save()
+        return super().save()
 
 class HomeForm(forms.ModelForm):
     class Meta:

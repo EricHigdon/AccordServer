@@ -350,7 +350,7 @@ def campaigns(request):
         if request.method == 'POST':
             form = CampaignEntryForm(request.POST, instance=campaignentry)
             if form.is_valid():
-                form.save(campaign)
+                campaignentry = form.save(campaign)
                 form = CampaignEntryForm()
                 if edit_pk is not None:
                     return redirect(reverse('campaigns')+'?campaign_pk={}'.format(campaignentry.campaign_id))
@@ -372,7 +372,7 @@ def campaigns(request):
         if request.method == 'POST':
             form = CampaignForm(request.POST, instance=edit_campaign)
             if form.is_valid():
-                form.save(church)
+                edit_campaign = form.save(church)
                 form = CampaignForm()
                 if edit_campaign_pk is not None:
                     return redirect(reverse('campaigns')+'?campaign_pk={}'.format(edit_campaign.pk))
@@ -404,9 +404,18 @@ def delete_campaignentry(request, item_pk):
     campaignentry = CampaignEntry.objects.get(pk=item_pk)
     if request.user in campaignentry.campaign.church.admins.all():
         campaignentry.delete()
-        campaignentry.church.modified = timezone.now()
-        campaignentry.church.save()
-    return redirect('service')
+        campaignentry.campaign.church.modified = timezone.now()
+        campaignentry.campaign.church.save()
+    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(campaignentry.campaign_id))
+
+@login_required
+def delete_campaign(request, item_pk):
+    campaign = Campaign.objects.get(pk=item_pk)
+    if request.user in campaign.church.admins.all():
+        campaign.delete()
+        campaign.church.modified = timezone.now()
+        campaign.church.save()
+    return redirect('campaigns')
 
 @csrf_exempt
 @http_basic_auth
