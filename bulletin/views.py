@@ -96,6 +96,21 @@ def modified(request, church_pk):
         latest_passage_end = latest_passage_end[0].end_datetime
         if latest_passage_end is not None and latest_passage_end > modified:
             modified = latest_passage_end
+        
+    latest_campaignentry_start = CampaignEntry.objects.current().filter(
+        campaign__church_id=church.pk
+    ).order_by('-start_datetime')
+    if latest_campaignentry_start:
+        latest_campaignentry_start = latest_campaignentry_start[0].start_datetime
+        if latest_campaignentry_start is not None and latest_campaignentry_start > modified:
+            modified = latest_campaignentry_start
+    latest_campaignentry_end = CampaignEntry.objects.past().filter(
+        church_id=church.pk
+    ).order_by('-end_datetime')
+    if latest_campaignentry_end:
+        latest_campaignentry_end = latest_campaignentry_end[0].end_datetime
+        if latest_campaignentry_end is not None and latest_campaignentry_end > modified:
+            modified = latest_campaignentry_end
     
     response = JsonResponse({'modified': modified}, safe=False)
     response['Access-Control-Allow-Origin'] = '*'
