@@ -30,7 +30,7 @@ def dashboard(request):
         church = Church.objects.get(admins=request.user)
     except Church.DoesNotExist:
         return redirect('create_church')
-    form_submissions = church.form_submissions.all()[:5]
+    form_submissions = church.form_submissions.all()
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
@@ -320,6 +320,93 @@ def my_church(request):
         'active': 'my-church'
     }
     return render(request, template, context)
+
+@login_required
+def campaigns(request):
+    template = 'interface/campaigns.html'
+    try:
+        church = Church.objects.get(admins=request.user)
+    except Church.DoesNotExist:
+        return redirect('create_church')
+    campaign_pk = request.GET.get('campaign_pk', None)
+    if campaign_pk is not None:
+        try:
+            campaign = Campaign.objects.get(pk=campaign_pk)
+        except Campaign.DoesNotExist:
+            campaign = None
+    else:
+        campaign = None
+    edit_pk = request.GET.get('edit_pk', None)
+    if campaign is not None:
+        if edit_pk is not None:
+            try:
+                campaignentry = CampaignEntry.objects.get(pk=edit_pk)
+            except CampaignEntry.DoesNotExist:
+                campaignentry = None
+        else:
+            campaignentry = None
+        if request.method == 'POST':
+            form = CampaignEntryForm(request.POST, instance=campaignentry)
+            if form.is_valid():
+                form.save(campaign)
+                form = CampaignEntryForm()
+                if edit_pk is not None:
+                    return redirect('campaigns')
+                church.modified = timezone.now()
+                church.save()
+        else:
+            form = CampaignEntryForm(instance=campaignentry)
+        current_entries = CampaignEntry.objects.current().filter(campaign_id=campaign.pk)
+        upcoming_entries = CampaignEntry.objects.upcoming().filter(campaign_id=campaign.pk)
+        past_entries = CampaignEntry.objects.past().filter(campaign_id=campaign.pk)
+    else:
+        form = None
+        current_entries = []
+        upcoming_entries = []
+        past_entries = []
+    context = {
+        'static_url': settings.STATIC_URL,
+        'upload_path': settings.UPLOAD_PATH,
+        'edit_pk': edit_pk,
+        'campaign_pk': campaign_pk,
+        'church': church,
+        'form': form,
+        'campaign': campaign,
+        'current_entries': current_entries,
+        'upcoming_entries': upcoming_entries,
+        'past_entries': past_entries,
+        'active': 'campaigns'
+    }
+    return render(request, template, context)
+
+@login_required
+def delete_campaignentry(request, item_pk):
+    campaignentry = CampaignEntry.objects.get(pk=item_pk)
+    if request.user in campaignentry.campaign.church.admins.all():
+        campaignentry.delete()
+        campaignentry.church.modified = timezone.now()
+        campaignentry.church.save()
+    return redirect('service')
+
+@csrf_exempt
+@http_basic_auth
+def reorder_campaignentry(request):
+    changed = False
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data', None))
+        for item in data:
+            try:
+                campaignentry = CampaignEntry.objects.get(pk=item)
+                if request.user in campaignentry.campaign.church.admins.all():
+                    changed = True
+                    campaignentry.sort_order = data[item]
+                    campaignentry.save()
+            except CampaignEntry.DoesNotExist:
+                pass
+    if changed:
+        church.modified = timezone.now()
+        church.save()
+    return JsonResponse({'success': True})
 
 @login_required
 def send_message(request):

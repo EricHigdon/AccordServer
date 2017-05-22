@@ -147,7 +147,7 @@ class Church(models.Model):
 class Page(models.Model):
     title = models.CharField(max_length=200)
     church = models.ForeignKey(Church, related_name='pages')
-    template = models.TextField(max_length=5000)
+    template = models.TextField()
     
     def __str__(self):
         return self.title
@@ -242,3 +242,27 @@ class Passage(models.Model):
     
     class Meta:
         ordering = ['sort_order', '-end_datetime']
+
+class Campaign(models.Model):
+    objects = ScheduledManager()
+
+    church = models.ForeignKey(Church, related_name='campaigns')
+    name = models.CharField(max_length=200)
+    sort_order = models.IntegerField(default=0)
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class CampaignEntry(models.Model):
+    objects = ScheduledManager()
+
+    campaign = models.ForeignKey(Campaign, related_name='entries')
+    name = models.CharField(max_length=200)
+    content = models.TextField()
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
+
+    def __str__(self):
+        return self.name

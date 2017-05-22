@@ -87,8 +87,28 @@ class MyChurchForm(forms.ModelForm):
         widgets = {
             'address': forms.TextInput(attrs={'class': 'html-editor'}),
             'logo': ImageInput()
-        }     
-        
+        }
+
+class CampaignEntryForm(forms.ModelForm):
+    class Meta:
+        model = CampaignEntry
+        exclude = ('sort_order',)
+        widgets = {
+            'start_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'end_datetime': forms.TextInput(attrs={
+                'class': 'date',
+                'placeholder': 'leave blank for indefinite'
+            }),
+            'content': forms.TextInput(attrs={'class': 'html-editor'})
+        }
+
+    def save(self, campaign):
+        self.instance.campaign = campaign
+        super().save()
+
 class HomeForm(forms.ModelForm):
     class Meta:
         model = Church

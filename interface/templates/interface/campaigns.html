@@ -1,0 +1,123 @@
+{% extends 'interface/dashboard_base.html' %}
+{% load static %}
+{% block dashboard %}
+    <h1 class="page-header">Campaigns</h1>
+    <form method="GET" id="campaignForm" action="" onchange="$(this).closest('form').trigger('submit');">
+        <select name="campaign_pk">
+            {% for campaign in church.campaigns.all %}
+                <option value="{{ campaign.pk }}" {% if campaign_pk == campaign.pk %}select="select"{% endif %}>{{ campaign.name }}</option>
+            {% endfor %}
+        </select>
+        {% if church.campaigns.all.count == 1 and not campaign_pk %}
+            <script>
+                $('#campaignForm').trigger('submit');
+            </script>
+        {% endif %}
+    </form>
+    {% if campaign_pk %}
+        <h2>Current Campaign Entries</h2>
+        <div class="flexbox sortable">
+            {% for entry in current_entries %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <h3>{{ entry.name }}</h3>
+                        <p>{{ entry.content|safe }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <a href="?campaign_pk={{ campaign_pk }}&edit_pk=0" class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item add-item">
+               <div class="background">
+                   <i class="fa fa-plus"></i>
+                   <p>Add A Campaign Entry</p>
+               </div>
+            </a>
+        </div>
+        {% if upcoming_entries %}
+            <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed arrow-collapse">Upcoming Announcements</h2>
+            <div id="upcoming" class="flexbox sortable collapse">
+                {% for entry in upcoming_entries %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <h3>{{ entry.name }}</h3>
+                        <p>{{ entry.content|safe }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if past_entries %}
+            <h2 data-toggle="collapse" data-target="#past" class="collapsed arrow-collapse">Past Announcements</h2>
+            <div id="past" class="flexbox sortable collapse">
+                {% for entry in past_entries %}
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
+                    <div class="background">
+                        <div class="item-header">
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
+                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
+                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <h3>{{ entry.name }}</h3>
+                        <p>{{ entry.content|safe }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div id="addCampaignEntry" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <form method="POST" class="modal-content" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add A Campaign Entry</h4>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Save Item"/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Delete Campaign Entry?
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this campaign entry? This cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <a class="btn btn-primary btn-ok">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if form.errors or edit_pk %}
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $('#addCampaignEntry').modal('show');
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+{% endblock %}
