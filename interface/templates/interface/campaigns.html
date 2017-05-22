@@ -20,7 +20,7 @@
         <h2>Current Campaign Entries</h2>
         <div class="flexbox sortable">
             {% for entry in current_entries %}
-                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
+                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ entry.pk }}">
                     <div class="background">
                         <div class="item-header">
                             <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>

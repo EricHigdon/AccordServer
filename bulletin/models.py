@@ -255,14 +255,21 @@ class Campaign(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['sort_order', '-end_datetime',]
+
 class CampaignEntry(models.Model):
     objects = ScheduledManager()
 
     campaign = models.ForeignKey(Campaign, related_name='entries')
     name = models.CharField(max_length=200)
+    sort_order = models.IntegerField(default=0)
     content = models.TextField()
     start_datetime = models.DateTimeField('starts', blank=True, null=True)
     end_datetime = models.DateTimeField('ends', blank=True, null=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['sort_order', '-end_datetime',]

@@ -411,12 +411,13 @@ def delete_campaignentry(request, item_pk):
 @csrf_exempt
 @http_basic_auth
 def reorder_campaignentry(request):
+    church = Church.objects.get(admins=request.user)
     changed = False
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
         for item in data:
             try:
-                campaignentry = CampaignEntry.objects.get(pk=item)
+                campaignentry = CampaignEntry.objects.get(pk=item, campaign__church_id=church.pk)
                 if request.user in campaignentry.campaign.church.admins.all():
                     changed = True
                     campaignentry.sort_order = data[item]
