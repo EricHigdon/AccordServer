@@ -124,6 +124,7 @@ class ScheduledManager(models.Manager):
 class Church(models.Model):
     name = models.CharField(max_length=200)
     admins = models.ManyToManyField(User, related_name='church')
+    users = models.ManyToManyField(User, related_name='churches')
     modified = models.DateTimeField(default=timezone.now)
     im_new = models.TextField(max_length=10000)
     logo = models.ImageField(storage=upload_storage, blank=True)
