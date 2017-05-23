@@ -34,20 +34,19 @@ class UserViewSet(viewsets.ModelViewSet):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
-        device = None
-        try:
-            device = APNSDevice.objects.get(device_id=instance.username)
-        except APNSDevice.DoesNotExist:
-            pass
-        try:
-            device = GCMDevice.objects.get(device_id=instance.username)
-        except (GCMDevice.DoesNotExist, ValueError):
-            pass
-        if device is not None:
-            device.user = instance
-            device.save()
+    device = None
+    try:
+        device = APNSDevice.objects.get(device_id=instance.username)
+    except (APNSDevice.DoesNotExist, ValueError):
+        pass
+    try:
+        device = GCMDevice.objects.get(device_id=instance.username)
+    except (GCMDevice.DoesNotExist, ValueError):
+        pass
+    if device is not None:
+        device.user = instance
+        device.save()
 
-    
 def modified(request, church_pk):
     church = get_object_or_404(Church, pk=church_pk)
     modified = church.modified
@@ -105,7 +104,7 @@ def modified(request, church_pk):
         if latest_campaignentry_start is not None and latest_campaignentry_start > modified:
             modified = latest_campaignentry_start
     latest_campaignentry_end = CampaignEntry.objects.past().filter(
-        church_id=church.pk
+        campaign__church_id=church.pk
     ).order_by('-end_datetime')
     if latest_campaignentry_end:
         latest_campaignentry_end = latest_campaignentry_end[0].end_datetime
