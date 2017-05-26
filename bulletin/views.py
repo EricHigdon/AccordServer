@@ -54,10 +54,10 @@ def modified(request, church_pk):
         user_churches = Church.objects.filter(
             users=request.user
         ).exclude(pk=church.pk)
-        for church in user_churches:
-            church.users.remove(request.user)
-        if not church.users.filter(user=request.user).exists():
-            church.users.add(user)
+        for user_church in user_churches:
+            user_church.users.remove(request.user)
+        if not church.users.filter(pk=request.user.pk).exists():
+            church.users.add(request.user)
     
     latest_form_start = Form.objects.current().filter(
         church_id=church.pk
