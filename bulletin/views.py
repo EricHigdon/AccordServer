@@ -50,6 +50,14 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 def modified(request, church_pk):
     church = get_object_or_404(Church, pk=church_pk)
     modified = church.modified
+    if request.user.is_authenticated:
+        user_churches = Church.objects.filter(
+            users=request.user
+        ).exclude(pk=church.pk)
+        for church in user_churches:
+            church.users.remove(request.user)
+        if not church.users.filter(user=request.user).exists():
+            church.users.add(user)
     
     latest_form_start = Form.objects.current().filter(
         church_id=church.pk
