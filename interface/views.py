@@ -14,6 +14,22 @@ from django.conf import settings
 import json
 # Create your views here.
 
+def get_church(request, prefetch=None):
+    church = Church.objects.filter(admins=request.user)
+    if request.GET.get('church_pk', None):
+        request.session['church_pk'] = request.GET.get('church_pk')
+    if church.count() > 1:
+        request.session['churches'] = [{'pk':church.pk, 'name':church.name} for church in church.only('pk', 'name').all()]
+        if request.session.get('church_pk', None):
+            church = church.filter(pk=request.session.get('church_pk'))
+    elif church.count() == 0:
+        return None
+    if prefetch is not None:
+        church = church.prefetch_related(*prefetch)
+    church = church.first()
+    request.session['church_pk'] = church.pk
+    return church
+
 def index(request):
     return redirect('dashboard')
     template = 'interface/index.html'
@@ -26,10 +42,10 @@ def index(request):
 @login_required
 def dashboard(request):
     template = 'interface/dashboard.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
+
     form_submissions = church.form_submissions.all()
     context = {
         'static_url': settings.STATIC_URL,
@@ -43,10 +59,9 @@ def dashboard(request):
 @login_required
 def news(request):
     template = 'interface/news.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -107,17 +122,16 @@ def reorder_item(request):
             except Item.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        news_item.church.modified = timezone.now()
+        news_item.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def im_new(request):
     template = 'interface/im-new.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = ImNewForm(request.POST, instance=church)
         if form.is_valid():
@@ -148,10 +162,9 @@ def connect(request):
             'sort_order': forms.HiddenInput(attrs={'class': 'sort-order'}),
         }
     )
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -205,10 +218,6 @@ def delete_form(request, form_pk):
 @csrf_exempt
 @http_basic_auth
 def reorder_form(request):
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
     changed = False
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
@@ -222,17 +231,16 @@ def reorder_form(request):
             except Form.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        form.church.modified = timezone.now()
+        form.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def service(request):
     template = 'interface/service.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -293,17 +301,16 @@ def reorder_passage(request):
             except Passage.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        passage.church.modified = timezone.now()
+        passage.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def my_church(request):
     template = 'interface/my-church.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = MyChurchForm(request.POST, request.FILES, instance=church)
         if form.is_valid():
@@ -324,10 +331,9 @@ def my_church(request):
 @login_required
 def campaigns(request):
     template = 'interface/campaigns.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     campaign_pk = request.GET.get('campaign_pk', None)
     edit_campaign_pk = request.GET.get('edit_campaign_pk', None)
     if campaign_pk is not None:
@@ -420,7 +426,6 @@ def delete_campaign(request, item_pk):
 @csrf_exempt
 @http_basic_auth
 def reorder_campaignentry(request):
-    church = Church.objects.get(admins=request.user)
     changed = False
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
@@ -434,17 +439,16 @@ def reorder_campaignentry(request):
             except CampaignEntry.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        campaignentry.church.modified = timezone.now()
+        campaignentry.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def send_message(request):
     template = 'interface/send-message.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -463,10 +467,9 @@ def send_message(request):
 @login_required
 def display(request):
     template = 'interface/display.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -506,10 +509,9 @@ def delete_slide(request, item_pk):
 @login_required
 def home(request):
     template = 'interface/home.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = HomeForm(request.POST, request.FILES, instance=church)
         if form.is_valid():
@@ -531,7 +533,9 @@ def home(request):
 @login_required
 def view_registrant_data(request):
     template = 'interface/registrant-data.html'
-    church = request.user.church.prefetch_related('registrants').first()
+    church = get_church(request, prefetch=['registrants'])
+    if church is None:
+        redirect('create_church')
     events = church.registrants.order_by('event').distinct().values_list(
         'event', flat=True
     )
@@ -569,7 +573,11 @@ def view_registrant_data(request):
 ####################
 @login_required
 def export_registrants(request, event):
-    church = request.user.church.only('pk').first().pk
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
+    else:
+        church = church.pk
     dataset = RegistrantResource(church, event).export()
     response = HttpResponse(content=dataset.csv, content_type='text/csv')
     response['Content-disposition'] = 'attachment; filename={} registrants.csv'.format(event)

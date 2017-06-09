@@ -5,21 +5,27 @@ PUSH_NOTIFICATIONS_SETTINGS = {
     #'APNS_CERTIFICATE': '/certs/accord/dist.pem',
     #'APNS_HOST': 'gateway.push.apple.com',
 }
+def get_true(item):
+    return True
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': get_true
+}
 
 #STATIC_URL = '/static/'
 #UPLOAD_PATH = 'img/uploads/'
 #UPLOAD_URL = '/Users/erichigdon/venvs/churchapp/lib/python3.5/site-packages/django/contrib/admin/static/' + UPLOAD_PATH
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ehigdon_beta_accord',
-        'USER': 'ehigdon_accord',
-        'PASSWORD': 't)6hq6evC.@fyq@^xh',
-        'HOST': '198.38.82.92',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'ehigdon_beta_accord',
+#        'USER': 'ehigdon_accord',
+#        'PASSWORD': 't)6hq6evC.@fyq@^xh',
+#        'HOST': '198.38.82.92',   # Or an IP Address that your DB is hosted on
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#        },
+#    }
+#}

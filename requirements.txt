@@ -9,3 +9,4 @@ feedparser==5.2.1
 django-import-export==0.5.1
 django-localflavor==1.4.1
 django-phonenumber-field==1.2.0
+Pillow==4.1.1

@@ -29,6 +29,9 @@ ALLOWED_HOSTS = [
     '.erichigdon.com',
     '*'
 ]
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
@@ -54,6 +57,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'localflavor',
     'corsheaders',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -65,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 
