@@ -53,7 +53,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class ModifiedAPI(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get(self, request, church_pk):
         church = get_object_or_404(Church, pk=church_pk)
