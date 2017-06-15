@@ -29,6 +29,8 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = super(UserViewSet, self).get_queryset(*args, **kwargs)
         if self.request.user.is_authenticated():
             queryset = queryset.filter(pk=self.request.user.pk)
+        if self.request.GET.get('username', None):
+            queryset = queryset.filter(username=self.request.GET.get('username', None))
         return queryset
 
     def get_object(self):
