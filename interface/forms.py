@@ -1,11 +1,11 @@
 from django import forms
 from django.conf import settings
-from django.core.mail import send_mail
 from django.forms.models import inlineformset_factory
 
 from bulletin.models import *
 from display.models import *
 from register.models import *
+from interface.models import *
 from push_notifications.models import *
 
 class ImageInput(forms.ClearableFileInput):
@@ -208,8 +208,52 @@ ChildrenFormSet = inlineformset_factory(
 
 class SupportForm(forms.Form):
     name = forms.CharField()
-    email = forms.EmailField()
+    email = forms.EmailField(required=True)
     message = forms.CharField(widget=forms.Textarea())
 
     def save(self):
-        send_mail('support request', self.cleaned_data['message'], 'eric.s.higdon@gmail.com', [self.cleaned_data['email']], fail_silently=False)
+        ContactSubmission(
+            name=self.cleaned_data['name'],
+            email=self.cleaned_data['email'],
+            subject='support_request',
+            body=self.cleaned_data['message']
+        ).save()
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactSubmission
+        exclude = ['datetime',]
+        widgets = {
+            'name': forms.widgets.TextInput(attrs={'placeholder': 'Name'}),
+            'email': forms.widgets.EmailInput(attrs={'placeholder': 'Email'}),
+            'subject': forms.widgets.TextInput(attrs={'placeholder': 'Subject'}),
+            'body': forms.widgets.Textarea(attrs={'placeholder': 'Message'}),
+        }
+
+class GetStartedForm(forms.Form):
+    name = forms.CharField()
+    church_name = forms.CharField()
+    church_website = forms.URLField(required=False)
+    phone_number = forms.CharField(required=False)
+    email = forms.EmailField()
+    average_church_attendance = forms.IntegerField()
+    notes = forms.CharField(
+        label='Any other details you wish to share',
+        widget=forms.Textarea(),
+        required=False
+    )
+
+    def save(self):
+        body = 'Church Name: {}\nChurch Website: {}\nPhone Number: {}\nChurch Size: {}'.format(
+            self.cleaned_data['church_name'],
+            self.cleaned_data['church_website'],
+            self.cleaned_data['phone_number'],
+            self.cleaned_data['average_church_attendance'],
+            self.cleaned_data['notes'],
+        )
+        ContactSubmission(
+            name=self.cleaned_data['name'],
+            email=self.cleaned_data['email'],
+            subject="I'm Ready to Get Started",
+            body=body
+        ).save()

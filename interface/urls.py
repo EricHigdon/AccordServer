@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^privacy-policy/$', views.privacy_policy, name='privacy_policy'),
     url(r'^support/$', views.support, name='support'),
+    url(r'^get-started/$', views.get_started, name='get_started'),
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
     url(r'^campaigns/$', views.campaigns, name='campaigns'),
     url(r'^campaignentry/delete/(?P<item_pk>[0-9]+)/$', views.delete_campaignentry, name='delete_campaignentry'),

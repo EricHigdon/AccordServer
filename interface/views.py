@@ -31,12 +31,16 @@ def get_church(request, prefetch=None):
     return church
 
 def index(request):
-    return redirect('dashboard')
     template = 'interface/index.html'
-    context = {
-        'title': 'Welcome',
-        'active': 'home'
-    }
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = None
+    else:
+        form = ContactForm()
+
+    context = {'form': form}
     return render(request, template, context)
 
 @login_required
@@ -597,7 +601,20 @@ def support(request):
         form = SupportForm(request.POST)
         if form.is_valid():
             form.save()
+            form = None
     else:
         form = SupportForm()
+    context = {'form': form}
+    return render(request, template, context)
+
+def get_started(request):
+    template = 'interface/get_started.html'
+    if request.method == 'POST':
+        form = GetStartedForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = None
+    else:
+        form = GetStartedForm()
     context = {'form': form}
     return render(request, template, context)
