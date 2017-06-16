@@ -29,6 +29,8 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = super(UserViewSet, self).get_queryset(*args, **kwargs)
         if self.request.user.is_authenticated():
             queryset = queryset.filter(pk=self.request.user.pk)
+        if self.request.GET.get('username', None):
+            queryset = queryset.filter(username=self.request.GET.get('username', None))
         return queryset
 
     def get_object(self):
@@ -53,7 +55,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class ModifiedAPI(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
 
     def get(self, request, church_pk):
         church = get_object_or_404(Church, pk=church_pk)
