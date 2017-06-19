@@ -89,7 +89,7 @@ BOOK_CHOICES = (
 class ScheduledManager(models.Manager):
     def current(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=True)
                 | models.Q(start_datetime__lte=now)
@@ -103,7 +103,7 @@ class ScheduledManager(models.Manager):
     
     def upcoming(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=False)
                 & models.Q(start_datetime__gte=now)
@@ -113,7 +113,7 @@ class ScheduledManager(models.Manager):
     
     def past(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(end_datetime__isnull=False)
                 & models.Q(end_datetime__lte=now)
