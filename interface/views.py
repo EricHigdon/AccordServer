@@ -456,7 +456,7 @@ def send_message(request):
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save(church)
     else:
         form = MessageForm()
     context = {

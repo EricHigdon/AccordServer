@@ -1,7 +1,7 @@
 DEBUG = True
 PUSH_NOTIFICATIONS_SETTINGS = {
     'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-    'APNS_CERTIFICATE': 'dev.pem',
+    'APNS_CERTIFICATE': 'liftdev.pem',
     #'APNS_CERTIFICATE': '/certs/accord/dist.pem',
     #'APNS_HOST': 'gateway.push.apple.com',
 }
@@ -16,16 +16,16 @@ DEBUG_TOOLBAR_CONFIG = {
 #UPLOAD_PATH = 'img/uploads/'
 #UPLOAD_URL = '/Users/erichigdon/venvs/churchapp/lib/python3.5/site-packages/django/contrib/admin/static/' + UPLOAD_PATH
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'accordapp',
-        'USER': 'root',
-        'PASSWORD': '2Corinthians2:15',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'accordapp',
+#        'USER': 'root',
+#        'PASSWORD': '2Corinthians2:15',
+#        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#        },
+#    }
+#}

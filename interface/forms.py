@@ -151,9 +151,9 @@ class MessageForm(forms.Form):
         required=False
     )
     
-    def save(self, *args, **kwargs):
-        apn_devices = APNSDevice.objects.filter(active=True)
-        gcm_devices = GCMDevice.objects.filter(active=True)
+    def save(self, church, *args, **kwargs):
+        apn_devices = APNSDevice.objects.filter(active=True, user__churches=church)
+        gcm_devices = GCMDevice.objects.filter(active=True, user__churches=church)
         if self.cleaned_data['sound']:
             apn_devices.send_message(
                 self.cleaned_data['message'],
