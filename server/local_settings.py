@@ -1,9 +1,29 @@
 DEBUG = True
 PUSH_NOTIFICATIONS_SETTINGS = {
-    'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-    'APNS_CERTIFICATE': 'liftdev.pem',
-    #'APNS_CERTIFICATE': '/certs/accord/dist.pem',
-    #'APNS_HOST': 'gateway.push.apple.com',
+    "CONFIG": "push_notifications.conf.AppConfig",
+    "APPLICATIONS": {
+        "FWBC_GCM": {
+            # PLATFORM (required) determines what additional settings are required.
+            "PLATFORM": "GCM",
+            # required GCM setting
+            "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
+            },
+        "FWBC_APNS": {
+            "PLATFORM": "APNS",
+            #"CERTIFICATE": "/certs/accord/dist.pem",
+            "CERTIFICATE": "fwbc-dev.pem",
+            #'APNS_HOST': 'gateway.push.apple.com',
+            },
+        #"LIFT_GCM": {
+        #    "PLATFORM": "GCM",
+        #    "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
+        #    },
+        #"LIFT_APNS": {
+        #    "PLATFORM": "APNS",
+        #    'CERTIFICATE': 'lift-dev.pem',
+        #    #'HOST': 'gateway.push.apple.com',
+        #    },
+    }
 }
 def get_true(item):
     return True
