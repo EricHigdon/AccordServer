@@ -154,9 +154,11 @@ class MessageForm(forms.Form):
     def save(self, church, *args, **kwargs):
         apn_devices = APNSDevice.objects.filter(active=True, user__churches=church)
         gcm_devices = GCMDevice.objects.filter(active=True, user__churches=church)
+        print(church.certificate)
         if self.cleaned_data['sound']:
             apn_devices.send_message(
                 self.cleaned_data['message'],
+                certfile=church.certificate,
                 sound='default',
                 content_available=self.cleaned_data['force_update']
             )
@@ -168,6 +170,7 @@ class MessageForm(forms.Form):
         else:
             apn_devices.send_message(
                 self.cleaned_data['message'],
+                certfile=church.certificate,
                 content_available=self.cleaned_data['force_update']
             )
             gcm_devices.send_message(

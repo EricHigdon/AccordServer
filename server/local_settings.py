@@ -1,30 +1,39 @@
 DEBUG = True
+# Legacy Settings
 PUSH_NOTIFICATIONS_SETTINGS = {
-    "CONFIG": "push_notifications.conf.AppConfig",
-    "APPLICATIONS": {
-        "FWBC_GCM": {
-            # PLATFORM (required) determines what additional settings are required.
-            "PLATFORM": "GCM",
-            # required GCM setting
-            "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-            },
-        "FWBC_APNS": {
-            "PLATFORM": "APNS",
-            #"CERTIFICATE": "/certs/accord/dist.pem",
-            "CERTIFICATE": "fwbc-dev.pem",
-            #'APNS_HOST': 'gateway.push.apple.com',
-            },
-        #"LIFT_GCM": {
-        #    "PLATFORM": "GCM",
-        #    "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-        #    },
-        #"LIFT_APNS": {
-        #    "PLATFORM": "APNS",
-        #    'CERTIFICATE': 'lift-dev.pem',
-        #    #'HOST': 'gateway.push.apple.com',
-        #    },
-    }
+    'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
+    'APNS_CERTIFICATE': '/certs/fwbc-dev.pem',
+    'APNS_TOPIC': 'com.erichigdon.accord',
+    'APNS_HOST': 'gateway.push.apple.com',
 }
+#PUSH_NOTIFICATIONS_SETTINGS = {
+#    "CONFIG": "push_notifications.conf.AppConfig",
+#    "APPLICATIONS": {
+#        "FWBC_GCM": {
+#            # PLATFORM (required) determines what additional settings are required.
+#            "PLATFORM": "GCM",
+#            # required GCM setting
+#            "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
+#        },
+#        "FWBC_APNS": {
+#            "PLATFORM": "APNS",
+#            #"CERTIFICATE": "/certs/accord/dist.pem",
+#            "CERTIFICATE": "fwbc-dev.pem",
+#            'TOPIC': 'com.erichigdon.accord',
+#            #'HOST': 'gateway.push.apple.com',
+#        },
+#        #"LIFT_GCM": {
+#        #    "PLATFORM": "GCM",
+#        #    "API_KEY": 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
+#        #},
+#        #"LIFT_APNS": {
+#        #    "PLATFORM": "APNS",
+#        #    'CERTIFICATE': 'lift-dev.pem',
+#        #    #'HOST': 'gateway.push.apple.com',
+#        #},
+#    }
+#}
+
 def get_true(item):
     return True
 

@@ -93,7 +93,7 @@ TEMPLATES = [
 
 PUSH_NOTIFICATIONS_SETTINGS = {
     'GCM_API_KEY': 'AIzaSyDDNTILe2EW44CZHd21rlZCrfdXD0J48zs',
-    'APNS_CERTIFICATE': '/home3/ehigdon/certs/accord/dist.pem',
+    #'APNS_CERTIFICATE': '/home3/ehigdon/certs/accord/dist.pem',
     'APNS_HOST': 'gateway.push.apple.com',
 }
 

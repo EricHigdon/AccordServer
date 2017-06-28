@@ -141,6 +141,7 @@ class Church(models.Model):
         null=True
     )
     podcast_url = models.URLField(blank=True)
+    certificate = models.CharField(max_length=200, blank=True, help_text='If blank, push notifications will not send.')
     
     def __str__(self):
         return self.name
