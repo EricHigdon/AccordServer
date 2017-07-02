@@ -89,7 +89,7 @@ BOOK_CHOICES = (
 class ScheduledManager(models.Manager):
     def current(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=True)
                 | models.Q(start_datetime__lte=now)
@@ -103,7 +103,7 @@ class ScheduledManager(models.Manager):
     
     def upcoming(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=False)
                 & models.Q(start_datetime__gte=now)
@@ -113,7 +113,7 @@ class ScheduledManager(models.Manager):
     
     def past(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(end_datetime__isnull=False)
                 & models.Q(end_datetime__lte=now)
@@ -142,6 +142,7 @@ class Church(models.Model):
     )
     podcast_url = models.URLField(blank=True)
     ga_code = models.CharField(max_length=200)
+    certificate = models.CharField(max_length=200, blank=True, help_text='If blank, push notifications will not send.')
     
     def __str__(self):
         return self.name

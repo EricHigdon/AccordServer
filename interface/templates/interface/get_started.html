@@ -2,8 +2,9 @@
 {% load static %}
 {% block content %}
     <div class="container">
-        <h1>Support</h1>
+        <h1>Get Started</h1>
         {% if form %}
+            <p>Ready to get started with Accord? Answer a few questions below to get the process started.</p>
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}

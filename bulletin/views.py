@@ -44,14 +44,18 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     device = None
     try:
         device = APNSDevice.objects.get(device_id=instance.username)
-    except (APNSDevice.DoesNotExist, ValueError):
+    except:
         pass
     try:
         device = GCMDevice.objects.get(device_id=instance.username)
-    except (GCMDevice.DoesNotExist, ValueError):
+    except:
         pass
     if device is not None:
         device.user = instance
+        if instance.first_name and instance.last_name:
+            device.name = '{} {}'.format(
+                instance.first_name, instance.last_name
+            )
         device.save()
 
 class ModifiedAPI(APIView):
