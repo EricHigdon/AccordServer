@@ -251,6 +251,7 @@ class Campaign(models.Model):
 
     church = models.ForeignKey(Church, related_name='campaigns')
     name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
     sort_order = models.IntegerField(default=0)
     start_datetime = models.DateTimeField('starts', blank=True, null=True)
     end_datetime = models.DateTimeField('ends', blank=True, null=True)
@@ -266,6 +267,7 @@ class CampaignEntry(models.Model):
 
     campaign = models.ForeignKey(Campaign, related_name='entries')
     name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
     sort_order = models.IntegerField(default=0)
     content = models.TextField()
     start_datetime = models.DateTimeField('starts', blank=True, null=True)
