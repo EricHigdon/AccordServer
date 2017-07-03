@@ -293,6 +293,7 @@ def delete_passage(request, item_pk):
 @http_basic_auth
 def reorder_passage(request):
     changed = False
+    passage = None
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
         for item in data:
@@ -304,7 +305,7 @@ def reorder_passage(request):
                     passage.save()
             except Passage.DoesNotExist:
                 pass
-    if changed:
+    if passage is not None and changed:
         passage.church.modified = timezone.now()
         passage.church.save()
     return JsonResponse({'success': True})
@@ -358,7 +359,7 @@ def campaigns(request):
         else:
             campaignentry = None
         if request.method == 'POST':
-            form = CampaignEntryForm(request.POST, instance=campaignentry)
+            form = CampaignEntryForm(request.POST, request.FILES, instance=campaignentry)
             if form.is_valid():
                 campaignentry = form.save(campaign)
                 form = CampaignEntryForm()
@@ -380,7 +381,7 @@ def campaigns(request):
         else:
             edit_campaign = None
         if request.method == 'POST':
-            form = CampaignForm(request.POST, instance=edit_campaign)
+            form = CampaignForm(request.POST, request.FILES, instance=edit_campaign)
             if form.is_valid():
                 edit_campaign = form.save(church)
                 form = CampaignForm()
@@ -431,6 +432,7 @@ def delete_campaign(request, item_pk):
 @http_basic_auth
 def reorder_campaignentry(request):
     changed = False
+    campaignentry = None
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
         for item in data:
@@ -442,7 +444,7 @@ def reorder_campaignentry(request):
                     campaignentry.save()
             except CampaignEntry.DoesNotExist:
                 pass
-    if changed:
+    if campaignentry is not None and changed:
         campaignentry.church.modified = timezone.now()
         campaignentry.church.save()
     return JsonResponse({'success': True})

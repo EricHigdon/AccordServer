@@ -141,6 +141,7 @@ class Church(models.Model):
         null=True
     )
     podcast_url = models.URLField(blank=True)
+    ga_code = models.CharField(max_length=200)
     certificate = models.CharField(max_length=200, blank=True, help_text='If blank, push notifications will not send.')
     
     def __str__(self):
@@ -250,6 +251,7 @@ class Campaign(models.Model):
 
     church = models.ForeignKey(Church, related_name='campaigns')
     name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
     sort_order = models.IntegerField(default=0)
     start_datetime = models.DateTimeField('starts', blank=True, null=True)
     end_datetime = models.DateTimeField('ends', blank=True, null=True)
@@ -265,6 +267,7 @@ class CampaignEntry(models.Model):
 
     campaign = models.ForeignKey(Campaign, related_name='entries')
     name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
     sort_order = models.IntegerField(default=0)
     content = models.TextField()
     start_datetime = models.DateTimeField('starts', blank=True, null=True)

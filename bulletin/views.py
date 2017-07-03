@@ -24,9 +24,10 @@ from rest_framework.views import APIView
 class UserViewSet(viewsets.ModelViewSet):   
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    permission_class = []
     
     def get_queryset(self, *args, **kwargs):
-        queryset = super(UserViewSet, self).get_queryset(*args, **kwargs)
+        queryset = super().get_queryset(*args, **kwargs)
         if self.request.user.is_authenticated():
             queryset = queryset.filter(pk=self.request.user.pk)
         if self.request.GET.get('username', None):
@@ -171,7 +172,7 @@ def api(request, church_pk):
             'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})
-    response = JsonResponse({'pages': pages}, safe=False)
+    response = JsonResponse({'pages': pages, 'ga': church.ga_code}, safe=False)
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
