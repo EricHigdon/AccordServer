@@ -23,17 +23,23 @@
 		<a href="?edit_campaign_pk={{ campaign_pk }}"><i class="fa fa-edit"></i> Edit Campaign</a>
 		<a data-href="{% url 'delete_campaign' campaign_pk %}" data-toggle="modal" data-target="#confirm-delete-campaign"><i class="fa fa-trash"></i> Delete Campaign</a>
         <h2>Current Campaign Entries</h2>
-        <div class="flexbox sortable">
+        <a href="#" onclick="$('.collapse').collapse('show'); $(this).hide(); $(this).next().show();" class="pull-right"><i class="fa fa-expand" aria-hidden="true"></i> Expand all</a>
+        <a href="#" onclick="$('.collapse').collapse('hide'); $(this).hide(); $(this).prev().show();" class="pull-right" style="display: none;"><i class="fa fa-compress" aria-hidden="true"></i> Collapse all</a>
+        <div class="flexbox sortable" style="clear: right;">
             {% for entry in current_entries %}
                 <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ entry.pk }}">
                     <div class="background">
                         <div class="item-header">
-                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
-                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true" title="Reorder"></i>
+                            <a href="#collapse{{ entry.pk }}" data-toggle="collapse">
+                                <i class="fa fa-expand pull-left" aria-hidden="true" style="margin-top:4px;" onclick="$(this).hide().next().show();" title="Expand"></i>
+                                <i class="fa fa-compress pull-left" aria-hidden="true" style="display: none; margin-top:4px;" onclick="$(this).hide().prev().show();" title="Collapse"></i>
+                            </a>
+                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit" title="Edit"></i></a>
+                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash" title="Delete"></i></a>
                         </div>
                         <h3>{{ entry.name }}</h3>
-                        <p>{{ entry.content|safe }}</p>
+                        <div id="collapse{{ entry.pk }}" class="collapse">{{ entry.content|safe }}</div>
                     </div>
                 </div>
             {% endfor %}
@@ -48,18 +54,22 @@
             <h2 data-toggle="collapse" data-target="#upcoming" class="collapsed arrow-collapse">Upcoming Announcements</h2>
             <div id="upcoming" class="flexbox sortable collapse">
                 {% for entry in upcoming_entries %}
-                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
-                    <div class="background">
-                        <div class="item-header">
-                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
-                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                    <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ entry.pk }}">
+                        <div class="background">
+                            <div class="item-header">
+                                <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true" title="Reorder"></i>
+                                <a href="#collapse{{ entry.pk }}" data-toggle="collapse">
+                                    <i class="fa fa-expand pull-left" aria-hidden="true" style="margin-top:4px;" onclick="$(this).hide().next().show();" title="Expand"></i>
+                                    <i class="fa fa-compress pull-left" aria-hidden="true" style="display: none; margin-top:4px;" onclick="$(this).hide().prev().show();" title="Collapse"></i>
+                                </a>
+                                <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit" title="Edit"></i></a>
+                                <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash" title="Delete"></i></a>
+                            </div>
+                            <h3>{{ entry.name }}</h3>
+                            <div id="collapse{{ entry.pk }}" class="collapse">{{ entry.content|safe }}</div>
                         </div>
-                        <h3>{{ entry.name }}</h3>
-                        <p>{{ entry.content|safe }}</p>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
             </div>
         {% endif %}
 
@@ -67,18 +77,22 @@
             <h2 data-toggle="collapse" data-target="#past" class="collapsed arrow-collapse">Past Announcements</h2>
             <div id="past" class="flexbox sortable collapse">
                 {% for entry in past_entries %}
-                <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ news_item.pk }}">
-                    <div class="background">
-                        <div class="item-header">
-                            <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true"></i>
-                            <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit"></i></a>
-                            <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash"></i></a>
+                    <div class="col-xs-12 col-mxs-6 col-sm-4 col-md-3 news-item" data-order="{{ forloop.counter0 }}" data-pk="{{ entry.pk }}">
+                        <div class="background">
+                            <div class="item-header">
+                                <i class="glyphicon glyphicon-move sort-handle pull-left" aria-hidden="true" title="Reorder"></i>
+                                <a href="#collapse{{ entry.pk }}" data-toggle="collapse">
+                                    <i class="fa fa-expand pull-left" aria-hidden="true" style="margin-top:4px;" onclick="$(this).hide().next().show();" title="Expand"></i>
+                                    <i class="fa fa-compress pull-left" aria-hidden="true" style="display: none; margin-top:4px;" onclick="$(this).hide().prev().show();" title="Collapse"></i>
+                                </a>
+                                <a href="?campaign_pk={{ campaign_pk }}&edit_pk={{ entry.pk }}"><i class="fa fa-edit" title="Edit"></i></a>
+                                <a data-href="{% url 'delete_campaignentry' entry.pk %}" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash" title="Delete"></i></a>
+                            </div>
+                            <h3>{{ entry.name }}</h3>
+                            <div id="collapse{{ entry.pk }}" class="collapse">{{ entry.content|safe }}</div>
                         </div>
-                        <h3>{{ entry.name }}</h3>
-                        <p>{{ entry.content|safe }}</p>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
             </div>
         {% endif %}
     {% endif %}
