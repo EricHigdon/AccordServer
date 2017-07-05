@@ -1,7 +1,7 @@
 {% extends 'interface/dashboard_base.html' %}
 {% load static %}
 {% block dashboard %}
-    <h1 class="page-header">News</h1>
+    <h1 class="page-header">{% if church.pk == 3 %}Schedule{% else %}News{% endif %}</h1>
     <h2>Current Announcements</h2>
     <div class="flexbox sortable">
         {% for news_item in current_items %}

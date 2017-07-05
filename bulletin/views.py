@@ -203,7 +203,7 @@ def contact(request):
                 email = EmailMultiAlternatives(
                     form.name,
                     msg_plain,
-                    'Fairfieldwestbaptist@gmail.com',
+                    'ConnectCards@accordapp.com',
                     recipients,
                     ['eric.s.higdon@gmail.com'],
                     reply_to=[reply_email]
