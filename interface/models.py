@@ -18,4 +18,4 @@ class ContactSubmission(models.Model):
 def send_email(sender, instance, created, *args, **kwargs):
     if created:
         body = 'Name: {}\n{}'.format(instance.name, instance.body)
-        send_mail(instance.subject, body, instance.email, ['eric.s.higdon@gmail.com'], fail_silently=True)
+        send_mail(instance.subject, body, instance.email, ['info@accordapp.com'], fail_silently=True)
