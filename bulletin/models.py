@@ -84,6 +84,25 @@ BOOK_CHOICES = (
     ('jude', 'Jude'),
     ('revelation', 'Revelation')
 )
+
+DAYS = (
+    ('', '------'),
+    (6, 'Sunday'),
+    (0, 'Monday'),
+    (1, 'Tuesday'),
+    (2, 'Wednesday'),
+    (3, 'Thursday'),
+    (4, 'Friday'),
+    (5, 'Saturday'),
+)
+POSITIONS = (
+    ('', '------'),
+    ('topleft', 'Top Left'),
+    ('topright', 'Top Right'),
+    ('center', 'Center'),
+    ('bottomleft', 'Bottom Left'),
+    ('bottomright', 'Bottom Right'),
+)
 # Create your models here.
 
 class ScheduledManager(models.Manager):
@@ -143,7 +162,11 @@ class Church(models.Model):
     podcast_url = models.URLField(blank=True)
     ga_code = models.CharField(max_length=200)
     certificate = models.CharField(max_length=200, blank=True, help_text='If blank, push notifications will not send.')
-    
+    countdown_day = models.IntegerField(choices=DAYS, blank=True)
+    countdown_time = models.TimeField(blank=True)
+    countdown_position = models.CharField(max_length=100, choices=POSITIONS, blank=True)
+    countdown_image = models.ImageField(storage=upload_storage, blank=True)
+
     def __str__(self):
         return self.name
     
