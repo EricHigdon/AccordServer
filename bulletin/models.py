@@ -98,9 +98,13 @@ DAYS = (
 POSITIONS = (
     ('', '------'),
     ('topleft', 'Top Left'),
+    ('topcenter', 'Top Center'),
     ('topright', 'Top Right'),
+    ('centerleft', 'Center Left'),
     ('center', 'Center'),
+    ('centerright', 'Center Right'),
     ('bottomleft', 'Bottom Left'),
+    ('bottomcenter', 'Bottom Center'),
     ('bottomright', 'Bottom Right'),
 )
 # Create your models here.

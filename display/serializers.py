@@ -17,10 +17,11 @@ class SlideSerializer(serializers.ModelSerializer):
 
 class CountdownSerializer(serializers.ModelSerializer):
     countdown = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Church
-        fields = ('name', 'countdown', 'countdown_image', 'countdown_position')
+        fields = ('name', 'countdown', 'image', 'countdown_position')
 
     def get_countdown(self, church):
         today = date.today()
@@ -51,3 +52,7 @@ class CountdownSerializer(serializers.ModelSerializer):
             )
 
         return countdown_to
+
+    def get_image(self, church):
+        url = church.countdown_image.url
+        return settings.STATIC_URL + settings.UPLOAD_PATH + url
