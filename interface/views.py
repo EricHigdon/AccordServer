@@ -437,7 +437,7 @@ def reorder_campaignentry(request):
         data = json.loads(request.POST.get('data', None))
         for item in data:
             try:
-                campaignentry = CampaignEntry.objects.get(pk=item, campaign__church_id=church.pk)
+                campaignentry = CampaignEntry.objects.get(pk=item)
                 if request.user in campaignentry.campaign.church.admins.all():
                     changed = True
                     campaignentry.sort_order = data[item]
@@ -445,8 +445,8 @@ def reorder_campaignentry(request):
             except CampaignEntry.DoesNotExist:
                 pass
     if campaignentry is not None and changed:
-        campaignentry.church.modified = timezone.now()
-        campaignentry.church.save()
+        campaignentry.campaign.church.modified = timezone.now()
+        campaignentry.campaign.church.save()
     return JsonResponse({'success': True})
 
 @login_required
