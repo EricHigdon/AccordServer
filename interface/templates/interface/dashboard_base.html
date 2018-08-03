@@ -15,16 +15,26 @@
                     <img class="church-logo" src="{{ static_url }}{{ upload_path }}{{ church.logo }}" alt="{{ church.name }}"/>
                 {% endif %}
                 <ul class="nav nav-sidebar">
-                    <li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a></li>
-                    <li class="home"><a href="{% url 'home' %}"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
-                    <li class="im-new"><a href="{% url 'im_new' %}"><i class="fa fa-user" aria-hidden="true"></i> I&rsquo;m New</a></li>
-                    <li class="news"><a href="{% url 'news' %}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a></li>
-                    <li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>
+					{% if church.pk == 3 %}
+                    	<li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a></li>
+                    	<li class="home"><a href="{% url 'home' %}"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                    	<li class="campaigns"><a href="{% url 'campaigns' %}"><i class="fa fa-book" aria-hidden="true"></i>Resources</a></li>
+                    	<li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>Connect</a></li>
+                        <li class="news"><a href="{% url 'news' %}"><i class="fa fa-calendar" aria-hidden="true"></i> Schedule</a></li>
+                    	<li class="send-message"><a href="{% url 'send_message' %}"><i class="fa fa-comment" aria-hidden="true"></i> Notifications</a></li>
+					{% else %}
+                    	<li class="overview"><a href="{% url 'dashboard' %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Dashboard</a></li>
+                    	<li class="home"><a href="{% url 'home' %}"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+                    	<li class="im-new"><a href="{% url 'im_new' %}"><i class="fa fa-user" aria-hidden="true"></i> I&rsquo;m New</a></li>
+                    	<li class="news"><a href="{% url 'news' %}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a></li>
+                    	<li class="connect"><a href="{% url 'connect' %}"><i class="fa fa-plug" aria-hidden="true"></i>
  Connect</a></li>
- 					<li class='my-church'><a href="#" data-toggle="collapse" data-target="#myChurch" class="collapsed"><i class="my-church-icon"></i>My Church</a><ul id="myChurch" class="collapse nav">
-                    	<li class="service"><a href="{% url 'service' %}"><i class="fa fa-book" aria-hidden="true"></i> Service</a></li>
-					</ul></li>
-                    <li class="send-message"><a href="{% url 'send_message' %}"><i class="fa fa-comment" aria-hidden="true"></i> Notifications</a></li>
+						<li class='my-church'><a href="#" data-toggle="collapse" data-target="#myChurch"{% if active != 'service' and active != 'campaigns' %} class="collapsed"{% endif %}><i class="my-church-icon"></i>My Church</a><ul id="myChurch" class="collapse nav{% if active == 'service' or active == 'campaigns' %} in{% endif %}">
+                    		<li class="service"><a href="{% url 'service' %}"><i class="fa fa-book" aria-hidden="true"></i> Service</a></li>
+                    		<li class="campaigns"><a href="{% url 'campaigns' %}"><i class="fa fa-flag" aria-hidden="true"></i> Campaigns</a></li>
+						</ul></li>
+                    	<li class="send-message"><a href="{% url 'send_message' %}"><i class="fa fa-comment" aria-hidden="true"></i> Notifications</a></li>
+					{% endif %}
                 </ul>
             </div>
             <div class="col-xs-11 col-xs-offset-0 col-mxs-8 col-mxs-offset-4 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

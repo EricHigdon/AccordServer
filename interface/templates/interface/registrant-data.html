@@ -3,6 +3,13 @@
 
 {% block extra_script %}
 	<script type="text/javascript" src="{% static '/js/jquery.formset.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/confetti.js' %}"></script>
+	<style>
+		canvas#confetti {
+			margin-top: -72px;
+			height: 86px;
+		}
+	</style>
 {% endblock %}
 
 {% block content %}
@@ -12,6 +19,26 @@
 			<a href="{% url 'register' %}" target="_blank" style="font-size: 11pt; float: right; margin-top: 10px;"><i class="fa fa-external-link"></i> Registration Form</a>
 		</h1>
 		{% if events %}
+			{% if registrants|length %}
+			<a href="{% url 'export_registrants' request.GET.event %}" class="btn btn-primary pull-right" style="margin-bottom: 15px;"><i class="fa fa-download"></i> Export Registrants</a>
+			<a href="#winner" id="pickAWinner" class="btn btn-primary pull-right" style="margin: 0 15px 15px 0;" title="Picks a random registrant from this list"><i class="fa fa-trophy"></i> Pick a Winner</a>
+			<script type="text/javascript">
+				function setUpWinner() {
+					$('#pickAWinner').click(function(e) {
+						e.preventDefault();
+						var registrants = $('.registrant'),
+							winner = $(registrants[Math.floor(Math.random()*registrants.length)]);
+						$('.confetti').remove();
+						$('tr.success').removeClass('success');
+						winner.after('<tr class="confetti"><td colspan="5" style="padding: 0;"><canvas id="canvas" width="'+winner.width()+'px" height="'+winner.height()*2.5+'px" style="display:block; margin-top:-'+winner.height()*2.5+'px; pointer-events:none;"></canvas></td></tr>');
+						winner.next().find('canvas').get(0).scrollIntoView();
+						winner.attr('id', 'winner').addClass('success');
+						confetti();
+					});
+				}
+				setUpWinner();
+			</script>
+			{% endif %}
 			<form id="eventForm" method="GET">
 				<select id="event" name="event" class="form-control">
 					<option value="">------</option>
@@ -29,7 +56,7 @@
 			<p>You currently don&rsquo;t have any registrant data. <a href="{% url 'register' %}">Start using the registration form</a> to collect some.</p>
 		{% endif %}
 		{% if registrants %}
-			<table class="table table-striped table-hover ">
+			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -41,7 +68,7 @@
 				</thead>
 				<tbody>
 				{% for person in registrants %}
-					<tr data-id="{{ person.pk }}">
+					<tr class="registrant" data-id="{{ person.pk }}">
 						<td>{{ person }}</td>
 						<td>{{ person.email }}</td>
 						<td>{{ person.phone }}</td>

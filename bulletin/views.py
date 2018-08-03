@@ -15,16 +15,23 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from push_notifications.models import APNSDevice, GCMDevice
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):   
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+    permission_class = []
     
     def get_queryset(self, *args, **kwargs):
-        queryset = super(UserViewSet, self).get_queryset(*args, **kwargs)
+        queryset = super().get_queryset(*args, **kwargs)
         if self.request.user.is_authenticated():
             queryset = queryset.filter(pk=self.request.user.pk)
+        if self.request.GET.get('username', None):
+            queryset = queryset.filter(username=self.request.GET.get('username', None))
         return queryset
 
     def get_object(self):
@@ -34,72 +41,102 @@ class UserViewSet(viewsets.ModelViewSet):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
-        device = None
-        try:
-            device = APNSDevice.objects.get(device_id=instance.username)
-        except APNSDevice.DoesNotExist:
-            pass
-        try:
-            device = GCMDevice.objects.get(device_id=instance.username)
-        except (GCMDevice.DoesNotExist, ValueError):
-            pass
-        if device is not None:
-            device.user = instance
-            device.save()
+    device = None
+    try:
+        device = APNSDevice.objects.get(device_id=instance.username)
+    except:
+        pass
+    try:
+        device = GCMDevice.objects.get(device_id=instance.username)
+    except:
+        pass
+    if device is not None:
+        device.user = instance
+        if instance.first_name and instance.last_name:
+            device.name = '{} {}'.format(
+                instance.first_name, instance.last_name
+            )
+        device.save()
 
-    
-def modified(request, church_pk):
-    church = get_object_or_404(Church, pk=church_pk)
-    modified = church.modified
-    
-    latest_form_start = Form.objects.current().filter(
-        church_id=church.pk
-    ).order_by('-start_datetime')
-    if latest_form_start:
-        latest_form_start = latest_form_start[0].start_datetime
-        if latest_form_start is not None and latest_form_start > modified:
-            modified = latest_form_start
-    latest_form_end = Form.objects.past().filter(
-        church_id=church.pk
-    ).order_by('-end_datetime')
-    if latest_form_end:
-        latest_form_end = latest_form_end[0].end_datetime
-        if latest_form_end is not None and latest_form_end > modified:
-            modified = latest_form_end
+class ModifiedAPI(APIView):
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    #permission_classes = (IsAuthenticated,)
+
+    def get(self, request, church_pk):
+        church = get_object_or_404(Church, pk=church_pk)
+        modified = church.modified
+        if request.user.is_authenticated:
+            user_churches = Church.objects.filter(
+                users=request.user
+            ).exclude(pk=church.pk)
+            for user_church in user_churches:
+                user_church.users.remove(request.user)
+            if not church.users.filter(pk=request.user.pk).exists():
+                church.users.add(request.user)
         
-    latest_news_start = Item.objects.current().filter(
-        church_id=church.pk
-    ).order_by('-start_datetime')
-    if latest_news_start:
-        latest_news_start = latest_news_start[0].start_datetime
-        if latest_news_start is not None and latest_news_start > modified:
-            modified = latest_news_start
-    latest_news_end = Item.objects.past().filter(
-        church_id=church.pk
-    ).order_by('-end_datetime')
-    if latest_news_end:
-        latest_news_end = latest_news_end[0].end_datetime
-        if latest_news_end is not None and latest_news_end > modified:
-            modified = latest_news_end
+        latest_form_start = Form.objects.current().filter(
+            church_id=church.pk
+        ).order_by('-start_datetime')
+        if latest_form_start:
+            latest_form_start = latest_form_start[0].start_datetime
+            if latest_form_start is not None and latest_form_start > modified:
+                modified = latest_form_start
+        latest_form_end = Form.objects.past().filter(
+            church_id=church.pk
+        ).order_by('-end_datetime')
+        if latest_form_end:
+            latest_form_end = latest_form_end[0].end_datetime
+            if latest_form_end is not None and latest_form_end > modified:
+                modified = latest_form_end
+            
+        latest_news_start = Item.objects.current().filter(
+            church_id=church.pk
+        ).order_by('-start_datetime')
+        if latest_news_start:
+            latest_news_start = latest_news_start[0].start_datetime
+            if latest_news_start is not None and latest_news_start > modified:
+                modified = latest_news_start
+        latest_news_end = Item.objects.past().filter(
+            church_id=church.pk
+        ).order_by('-end_datetime')
+        if latest_news_end:
+            latest_news_end = latest_news_end[0].end_datetime
+            if latest_news_end is not None and latest_news_end > modified:
+                modified = latest_news_end
+            
+        latest_passage_start = Passage.objects.current().filter(
+            church_id=church.pk
+        ).order_by('-start_datetime')
+        if latest_passage_start:
+            latest_passage_start = latest_passage_start[0].start_datetime
+            if latest_passage_start is not None and latest_passage_start > modified:
+                modified = latest_passage_start
+        latest_passage_end = Passage.objects.past().filter(
+            church_id=church.pk
+        ).order_by('-end_datetime')
+        if latest_passage_end:
+            latest_passage_end = latest_passage_end[0].end_datetime
+            if latest_passage_end is not None and latest_passage_end > modified:
+                modified = latest_passage_end
+            
+        latest_campaignentry_start = CampaignEntry.objects.current().filter(
+            campaign__church_id=church.pk
+        ).order_by('-start_datetime')
+        if latest_campaignentry_start:
+            latest_campaignentry_start = latest_campaignentry_start[0].start_datetime
+            if latest_campaignentry_start is not None and latest_campaignentry_start > modified:
+                modified = latest_campaignentry_start
+        latest_campaignentry_end = CampaignEntry.objects.past().filter(
+            campaign__church_id=church.pk
+        ).order_by('-end_datetime')
+        if latest_campaignentry_end:
+            latest_campaignentry_end = latest_campaignentry_end[0].end_datetime
+            if latest_campaignentry_end is not None and latest_campaignentry_end > modified:
+                modified = latest_campaignentry_end
         
-    latest_passage_start = Passage.objects.current().filter(
-        church_id=church.pk
-    ).order_by('-start_datetime')
-    if latest_passage_start:
-        latest_passage_start = latest_passage_start[0].start_datetime
-        if latest_passage_start is not None and latest_passage_start > modified:
-            modified = latest_passage_start
-    latest_passage_end = Passage.objects.past().filter(
-        church_id=church.pk
-    ).order_by('-end_datetime')
-    if latest_passage_end:
-        latest_passage_end = latest_passage_end[0].end_datetime
-        if latest_passage_end is not None and latest_passage_end > modified:
-            modified = latest_passage_end
-    
-    response = JsonResponse({'modified': modified}, safe=False)
-    response['Access-Control-Allow-Origin'] = '*'
-    return response
+        response = JsonResponse({'modified': modified}, safe=False)
+        response['Access-Control-Allow-Origin'] = '*'
+        return response
 
 def api(request, church_pk):
     extra_classes = ''
@@ -135,7 +172,7 @@ def api(request, church_pk):
             'church': church
         })
         pages.append({'title': page.title, 'content': t.render(c)})
-    response = JsonResponse({'pages': pages}, safe=False)
+    response = JsonResponse({'pages': pages, 'ga': church.ga_code}, safe=False)
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -166,7 +203,7 @@ def contact(request):
                 email = EmailMultiAlternatives(
                     form.name,
                     msg_plain,
-                    'Fairfieldwestbaptist@gmail.com',
+                    'ConnectCards@accordapp.com',
                     recipients,
                     ['eric.s.higdon@gmail.com'],
                     reply_to=[reply_email]

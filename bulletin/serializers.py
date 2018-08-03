@@ -16,12 +16,14 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = get_user_model()
-        fields = ('username', 'password', 'auth_token', 'first_name', 'last_name', 'pk')
+        fields = ('username', 'password', 'auth_token', 'first_name', 'last_name', 'pk', 'email')
         extra_kwargs = {
             'auth_token': {'required': False},
             'pk': {'required': False},
             'first_name': {'required': False},
             'last_name': {'required': False},
             'username': {'required': False},
+            'email': {'required': False},
             'password': {'write_only': True, 'required': False}
         }
+

@@ -84,12 +84,35 @@ BOOK_CHOICES = (
     ('jude', 'Jude'),
     ('revelation', 'Revelation')
 )
+
+DAYS = (
+    ('', '------'),
+    (6, 'Sunday'),
+    (0, 'Monday'),
+    (1, 'Tuesday'),
+    (2, 'Wednesday'),
+    (3, 'Thursday'),
+    (4, 'Friday'),
+    (5, 'Saturday'),
+)
+POSITIONS = (
+    ('', '------'),
+    ('topleft', 'Top Left'),
+    ('topcenter', 'Top Center'),
+    ('topright', 'Top Right'),
+    ('centerleft', 'Center Left'),
+    ('center', 'Center'),
+    ('centerright', 'Center Right'),
+    ('bottomleft', 'Bottom Left'),
+    ('bottomcenter', 'Bottom Center'),
+    ('bottomright', 'Bottom Right'),
+)
 # Create your models here.
 
 class ScheduledManager(models.Manager):
     def current(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=True)
                 | models.Q(start_datetime__lte=now)
@@ -103,7 +126,7 @@ class ScheduledManager(models.Manager):
     
     def upcoming(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(start_datetime__isnull=False)
                 & models.Q(start_datetime__gte=now)
@@ -113,7 +136,7 @@ class ScheduledManager(models.Manager):
     
     def past(self):
         now = timezone.now()
-        qs = super().get_queryset().filter(
+        qs = self.filter(
             models.Q(
                 models.Q(end_datetime__isnull=False)
                 & models.Q(end_datetime__lte=now)
@@ -124,6 +147,7 @@ class ScheduledManager(models.Manager):
 class Church(models.Model):
     name = models.CharField(max_length=200)
     admins = models.ManyToManyField(User, related_name='church')
+    users = models.ManyToManyField(User, related_name='churches', blank=True)
     modified = models.DateTimeField(default=timezone.now)
     im_new = models.TextField(max_length=10000)
     logo = models.ImageField(storage=upload_storage, blank=True)
@@ -140,17 +164,20 @@ class Church(models.Model):
         null=True
     )
     podcast_url = models.URLField(blank=True)
-    
+    ga_code = models.CharField(max_length=200)
+    certificate = models.CharField(max_length=200, blank=True, help_text='If blank, push notifications will not send.')
+    countdown_day = models.IntegerField(choices=DAYS, blank=True)
+    countdown_time = models.TimeField(blank=True)
+    countdown_position = models.CharField(max_length=100, choices=POSITIONS, blank=True)
+    countdown_image = models.ImageField(storage=upload_storage, blank=True)
+
     def __str__(self):
         return self.name
-
-    class Meta:
-        verbose_name_plural = 'Churches'
     
 class Page(models.Model):
     title = models.CharField(max_length=200)
     church = models.ForeignKey(Church, related_name='pages')
-    template = models.TextField(max_length=5000)
+    template = models.TextField()
     
     def __str__(self):
         return self.title
@@ -245,3 +272,36 @@ class Passage(models.Model):
     
     class Meta:
         ordering = ['sort_order', '-end_datetime']
+
+class Campaign(models.Model):
+    objects = ScheduledManager()
+
+    church = models.ForeignKey(Church, related_name='campaigns')
+    name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
+    sort_order = models.IntegerField(default=0)
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['sort_order', '-end_datetime',]
+
+class CampaignEntry(models.Model):
+    objects = ScheduledManager()
+
+    campaign = models.ForeignKey(Campaign, related_name='entries')
+    name = models.CharField(max_length=200)
+    image = models.ImageField(storage=upload_storage, blank=True)
+    sort_order = models.IntegerField(default=0)
+    content = models.TextField()
+    start_datetime = models.DateTimeField('starts', blank=True, null=True)
+    end_datetime = models.DateTimeField('ends', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['sort_order', '-end_datetime',]

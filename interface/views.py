@@ -3,33 +3,54 @@ from django.contrib.auth.decorators import login_required
 from bulletin.models import *
 from display.models import *
 from .forms import *
+from register.resources import RegistrantResource
 from django.forms import inlineformset_factory
 from bulletin.decorators import http_basic_auth
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
 import json
 # Create your views here.
 
+def get_church(request, prefetch=None):
+    church = Church.objects.filter(admins=request.user)
+    if request.GET.get('church_pk', None):
+        request.session['church_pk'] = request.GET.get('church_pk')
+    if church.count() > 1:
+        request.session['churches'] = [{'pk':church.pk, 'name':church.name} for church in church.only('pk', 'name').all()]
+        if request.session.get('church_pk', None):
+            church = church.filter(pk=request.session.get('church_pk'))
+    elif church.count() == 0:
+        return None
+    if prefetch is not None:
+        church = church.prefetch_related(*prefetch)
+    church = church.first()
+    request.session['church_pk'] = church.pk
+    return church
+
 def index(request):
-    return redirect('dashboard')
     template = 'interface/index.html'
-    context = {
-        'title': 'Welcome',
-        'active': 'home'
-    }
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = None
+    else:
+        form = ContactForm()
+
+    context = {'form': form}
     return render(request, template, context)
 
 @login_required
 def dashboard(request):
     template = 'interface/dashboard.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
-    form_submissions = church.form_submissions.all()[:5]
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
+
+    form_submissions = church.form_submissions.all()
     context = {
         'static_url': settings.STATIC_URL,
         'upload_path': settings.UPLOAD_PATH,
@@ -42,10 +63,9 @@ def dashboard(request):
 @login_required
 def news(request):
     template = 'interface/news.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -106,17 +126,16 @@ def reorder_item(request):
             except Item.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        news_item.church.modified = timezone.now()
+        news_item.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def im_new(request):
     template = 'interface/im-new.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = ImNewForm(request.POST, instance=church)
         if form.is_valid():
@@ -147,10 +166,9 @@ def connect(request):
             'sort_order': forms.HiddenInput(attrs={'class': 'sort-order'}),
         }
     )
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -204,10 +222,6 @@ def delete_form(request, form_pk):
 @csrf_exempt
 @http_basic_auth
 def reorder_form(request):
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
     changed = False
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
@@ -221,17 +235,16 @@ def reorder_form(request):
             except Form.DoesNotExist:
                 pass
     if changed:
-        church.modified = timezone.now()
-        church.save()
+        form.church.modified = timezone.now()
+        form.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def service(request):
     template = 'interface/service.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -280,6 +293,7 @@ def delete_passage(request, item_pk):
 @http_basic_auth
 def reorder_passage(request):
     changed = False
+    passage = None
     if request.method == 'POST':
         data = json.loads(request.POST.get('data', None))
         for item in data:
@@ -291,18 +305,17 @@ def reorder_passage(request):
                     passage.save()
             except Passage.DoesNotExist:
                 pass
-    if changed:
-        church.modified = timezone.now()
-        church.save()
+    if passage is not None and changed:
+        passage.church.modified = timezone.now()
+        passage.church.save()
     return JsonResponse({'success': True})
 
 @login_required
 def my_church(request):
     template = 'interface/my-church.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = MyChurchForm(request.POST, request.FILES, instance=church)
         if form.is_valid():
@@ -321,16 +334,131 @@ def my_church(request):
     return render(request, template, context)
 
 @login_required
+def campaigns(request):
+    template = 'interface/campaigns.html'
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
+    campaign_pk = request.GET.get('campaign_pk', None)
+    edit_campaign_pk = request.GET.get('edit_campaign_pk', None)
+    if campaign_pk is not None:
+        campaign_pk = int(campaign_pk)
+        try:
+            campaign = Campaign.objects.get(pk=campaign_pk)
+        except Campaign.DoesNotExist:
+            campaign = None
+    else:
+        campaign = None
+    edit_pk = request.GET.get('edit_pk', None)
+    if campaign is not None:
+        if edit_pk is not None:
+            try:
+                campaignentry = CampaignEntry.objects.get(pk=edit_pk, campaign__church_id=church.pk)
+            except CampaignEntry.DoesNotExist:
+                campaignentry = None
+        else:
+            campaignentry = None
+        if request.method == 'POST':
+            form = CampaignEntryForm(request.POST, request.FILES, instance=campaignentry)
+            if form.is_valid():
+                campaignentry = form.save(campaign)
+                form = CampaignEntryForm()
+                if edit_pk is not None:
+                    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(campaignentry.campaign_id))
+                church.modified = timezone.now()
+                church.save()
+        else:
+            form = CampaignEntryForm(instance=campaignentry)
+        current_entries = CampaignEntry.objects.current().filter(campaign_id=campaign.pk)
+        upcoming_entries = CampaignEntry.objects.upcoming().filter(campaign_id=campaign.pk)
+        past_entries = CampaignEntry.objects.past().filter(campaign_id=campaign.pk)
+    else:
+        if edit_campaign_pk is not None:
+            try:
+                edit_campaign = church.campaigns.get(pk=edit_campaign_pk)
+            except Campaign.DoesNotExist:
+                edit_campaign = None
+        else:
+            edit_campaign = None
+        if request.method == 'POST':
+            form = CampaignForm(request.POST, request.FILES, instance=edit_campaign)
+            if form.is_valid():
+                edit_campaign = form.save(church)
+                form = CampaignForm()
+                if edit_campaign_pk is not None:
+                    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(edit_campaign.pk))
+                church.modified = timezone.now()
+                church.save()
+        else:
+            form = CampaignForm(instance=edit_campaign)
+        current_entries = []
+        upcoming_entries = []
+        past_entries = []
+    context = {
+        'static_url': settings.STATIC_URL,
+        'upload_path': settings.UPLOAD_PATH,
+        'edit_pk': edit_pk,
+        'campaign_pk': campaign_pk,
+        'edit_campaign_pk': edit_campaign_pk,
+        'church': church,
+        'form': form,
+        'campaign': campaign,
+        'current_entries': current_entries,
+        'upcoming_entries': upcoming_entries,
+        'past_entries': past_entries,
+        'active': 'campaigns'
+    }
+    return render(request, template, context)
+
+@login_required
+def delete_campaignentry(request, item_pk):
+    campaignentry = CampaignEntry.objects.get(pk=item_pk)
+    if request.user in campaignentry.campaign.church.admins.all():
+        campaignentry.delete()
+        campaignentry.campaign.church.modified = timezone.now()
+        campaignentry.campaign.church.save()
+    return redirect(reverse('campaigns')+'?campaign_pk={}'.format(campaignentry.campaign_id))
+
+@login_required
+def delete_campaign(request, item_pk):
+    campaign = Campaign.objects.get(pk=item_pk)
+    if request.user in campaign.church.admins.all():
+        campaign.delete()
+        campaign.church.modified = timezone.now()
+        campaign.church.save()
+    return redirect('campaigns')
+
+@csrf_exempt
+@http_basic_auth
+def reorder_campaignentry(request):
+    changed = False
+    campaignentry = None
+    if request.method == 'POST':
+        data = json.loads(request.POST.get('data', None))
+        for item in data:
+            try:
+                campaignentry = CampaignEntry.objects.get(pk=item)
+                if request.user in campaignentry.campaign.church.admins.all():
+                    changed = True
+                    campaignentry.sort_order = data[item]
+                    campaignentry.save()
+            except CampaignEntry.DoesNotExist:
+                pass
+    if campaignentry is not None and changed:
+        campaignentry.campaign.church.modified = timezone.now()
+        campaignentry.campaign.church.save()
+    return JsonResponse({'success': True})
+
+@login_required
 def send_message(request):
     template = 'interface/send-message.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save(church)
     else:
         form = MessageForm()
     context = {
@@ -345,10 +473,9 @@ def send_message(request):
 @login_required
 def display(request):
     template = 'interface/display.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     edit_pk = request.GET.get('edit_pk', None)
     if edit_pk is not None:
         try:
@@ -388,10 +515,9 @@ def delete_slide(request, item_pk):
 @login_required
 def home(request):
     template = 'interface/home.html'
-    try:
-        church = Church.objects.get(admins=request.user)
-    except Church.DoesNotExist:
-        return redirect('create_church')
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
     if request.method == 'POST':
         form = HomeForm(request.POST, request.FILES, instance=church)
         if form.is_valid():
@@ -413,8 +539,12 @@ def home(request):
 @login_required
 def view_registrant_data(request):
     template = 'interface/registrant-data.html'
-    church = request.user.church.prefetch_related('registrants').first()
-    events = church.registrants.order_by('event').distinct().values_list('event', flat=True)
+    church = get_church(request, prefetch=['registrants'])
+    if church is None:
+        redirect('create_church')
+    events = church.registrants.order_by('event').distinct().values_list(
+        'event', flat=True
+    )
     event = request.GET.get('event', '')
     registrants = church.registrants.filter(event=event).order_by('-pk')
     edit_pk = request.GET.get('edit_pk', None)
@@ -426,7 +556,6 @@ def view_registrant_data(request):
     else:
         edit_registrant = None
     if request.method == 'POST':
-        print(request.POST)
         form = RegistrantForm(request.POST, instance=edit_registrant)
         children_form = ChildrenFormSet(request.POST, instance=edit_registrant)
         if form.is_valid() and children_form.is_valid():
@@ -445,6 +574,24 @@ def view_registrant_data(request):
     }
     return render(request, template, context)
 
+####################
+##  Export Views  ##
+####################
+@login_required
+def export_registrants(request, event):
+    church = get_church(request)
+    if church is None:
+        redirect('create_church')
+    else:
+        church = church.pk
+    dataset = RegistrantResource(church, event).export()
+    response = HttpResponse(content=dataset.csv, content_type='text/csv')
+    response['Content-disposition'] = 'attachment; filename={} registrants.csv'.format(event)
+    return response
+
+####################
+##  Static Views  ##
+####################
 def privacy_policy(request):
     template = 'interface/privacy-policy.html'
     context = {}
@@ -456,7 +603,20 @@ def support(request):
         form = SupportForm(request.POST)
         if form.is_valid():
             form.save()
+            form = None
     else:
         form = SupportForm()
+    context = {'form': form}
+    return render(request, template, context)
+
+def get_started(request):
+    template = 'interface/get_started.html'
+    if request.method == 'POST':
+        form = GetStartedForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = None
+    else:
+        form = GetStartedForm()
     context = {'form': form}
     return render(request, template, context)
