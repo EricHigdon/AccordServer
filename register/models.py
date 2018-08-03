@@ -11,7 +11,7 @@ class Registrant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200, blank=True)
-    phone = models.IntegerField(
+    phone = models.CharField(
         blank=True,
         null=True,
         help_text="""
