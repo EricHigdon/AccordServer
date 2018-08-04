@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^register/', include('register.urls')),
     url(r'^display/', include('display.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^groupme/', include('groupme.urls'))
 ]
 
 if settings.DEBUG:

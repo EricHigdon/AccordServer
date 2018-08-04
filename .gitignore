@@ -2,5 +2,6 @@ venv
 *.pyc
 staticfiles
 .env
-.idea
+.idea/*
 *.pem
+local_settings.py

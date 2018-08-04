@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'localflavor',
     'corsheaders',
-    'debug_toolbar'
+    'debug_toolbar',
+    'groupme',
 ]
 
 MIDDLEWARE = [
