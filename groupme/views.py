@@ -10,10 +10,14 @@ import json
 api = GroupMeAPI()
 
 
-def send_list(list):
+def render_message(list):
     t = Template(list.message)
     c = Context({'list': list})
-    text = t.render(c)
+    return t.render(c)
+
+
+def send_list(list):
+    text = render_message(list)
     message = {
         'source_guid': list.id,
         'text': text
@@ -38,10 +42,10 @@ def webhook(request, list_pk):
     message = json.loads(request.body.decode('utf-8'))
     name = deemoji(message['name'])
     text = message['text'].lower()
-    if not text.startswith('we need'):
+    if not text.startswith(render_message(list)[:20]):
         signed_up = False
         for item in list.items.all():
-            if item.title.lower() in text:
+            if item.title.lower() in text and name not in item.signed_up:
                 if item.signed_up != '':
                     name = ' {}'.format(name)
                 item.signed_up += name
