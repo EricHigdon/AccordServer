@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-
+from django.template import Template, Context
 from groupme.api import GroupMeAPI
 from groupme.models import SignupList
 import json
@@ -11,11 +11,9 @@ api = GroupMeAPI()
 
 
 def send_list(list):
-    text = 'We need people to sign up for the following items:\n{}'.format(
-        '\n'.join([
-            '{}: {}'.format(item.title, item.signed_up) for item in list.items.all()
-        ])
-    )
+    t = Template(list.message)
+    c = Context({'list': list})
+    text = t.render(c)
     message = {
         'source_guid': list.id,
         'text': text
