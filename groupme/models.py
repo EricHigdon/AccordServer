@@ -8,6 +8,7 @@ class SignupList(models.Model):
     end = models.DateTimeField()
     group = models.SlugField(max_length=200)
     bot_id = models.SlugField(max_length=200, blank=True)
+    message = models.TextField()
 
     def clean(self):
         if self.end <= self.start:
